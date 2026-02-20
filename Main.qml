@@ -1,4 +1,4 @@
-import QtQuick
+import QtQuick 2.16
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtCharts 2.10
@@ -19,29 +19,57 @@ Window {
     property bool isPortrait: width < height
     property bool isLandscape: width > height
 
+    // }
+    // Component.onCompleted: {
+    //     console.log("Auto-starting from previous session", mainwindow.js_status)
+    //     if (mainwindow.js_status) {
+    //         // console.log("Auto-starting from previous session",
+    //         //             mainwindow.js_startBtn)
+    //         if (mainwindow.js_startBtn !== "Start"
+    //                 || mainwindow.js_startBtn !== " ") {
+    //             startButton.clicked()
+    //             //mainwindow.startFlag === false
+    //         }
+    //         if (mainwindow.js_pauseBtn !== "Pause"
+    //                 || mainwindow.js_pauseBtn !== " ") {
+    //             breakButton.clicked()
+    //         }
+    //     }
+    // }
     BorderImage {
         id: borderImage
         width: window.width
         height: window.height
         visible: true
-        source: "rsc/bkgr.png"
+        source: "rsc/background.jpg"
         clip: true
-
+        // FontLoader {
+        //     id: candara
+        //     source: "qrc:/rsc/fonts/Candara.ttf"
+        // }
+        // FontLoader {
+        //     id: Square721 BT
+        //     source: "qrc:/rsc/fonts/square-721-bt/Square721 BTBTRoman.ttf"
+        // }
         Text {
             id: currentDate
             x: 0
-            y: 10
+            y: 15
             width: parent.width
             height: parent.height * 0.05
-            color: "#000ec1"
-            font.pointSize: parent.height * 0.025
+            color: "#6c0052"
+
+            font.pointSize: parent.height * 0.01 + parent.width * 0.02
             horizontalAlignment: Text.AlignHCenter
 
-            text: {
-                var now = new Date()
-                now.toLocaleDateString()
-            }
-            font.family: "Segoe Print"
+            text: dateText.text
+
+
+            /*{
+                //var now = new Date()
+                //now.toLocaleDateString()
+            }*/
+            font.family: "Candara"
             style: Text.Raised
         }
     }
@@ -244,6 +272,16 @@ Window {
         x: 0
         y: currentDate.height + 5
 
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0
+            verticalOffset: 4
+            radius: 8.0
+            samples: 17
+            color: "#80000000" // Semi-transparent black
+            transparentBorder: true
+        }
+
         Rectangle {
             id: rectangle5
             x: 50
@@ -251,7 +289,7 @@ Window {
             height: parent.height * 0.05
             color: "#00ffffff"
             anchors.top: bottomRow.bottom
-            anchors.topMargin: 5
+            anchors.topMargin: 1
 
             Row {
                 id: row2
@@ -285,7 +323,7 @@ Window {
             height: parent.height * 0.05
             color: "#01ffffff"
             anchors.top: upperRow.bottom
-            anchors.topMargin: 5
+            anchors.topMargin: 1
 
             Row {
                 id: row
@@ -301,6 +339,7 @@ Window {
                     id: startTime
                     text: qsTr("Started at:")
                     font.pointSize: (parent.width * 0.05 + parent.height * 0.5) / 2
+                    //font.family: candara.name
                 }
 
                 Text {
@@ -315,45 +354,54 @@ Window {
             id: bottomRow
             x: 0
             width: parent.width
-            height: parent.height * 0.2
+            height: parent.height * 0.15
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 50
+            anchors.bottomMargin: 60
 
             RoundButton {
                 id: endButton
-                width: parent.width * 0.40
+                width: parent.width * 0.35
                 height: parent.height // * 0.075
                 radius: 10
                 text: "End"
                 anchors.left: parent.left
-                anchors.leftMargin: 25
+                anchors.leftMargin: 35
 
-                bottomPadding: 12
+                bottomPadding: 10
                 font.pointSize: parent.width * 0.025 + parent.height * 0.05
                 font.family: "Square721 BT"
 
                 onClicked: {
-                    var date = new Date()
-                    var endtime = Qt.formatTime(date, "hh:mm:ss")
-                    var stopFlag = true
-                    mainwindow.endTime(endtime)
-                    mainwindow.stopCounter()
-                    mainwindow.stopPCounter()
-                    var now = new Date()
-                    var formated_str = Qt.formatDate(now, "dd_MMMM_yyyy")
-                    console.log("formated date in end btn: ", formated_str)
-                    mainwindow.calculatetime(formated_str)
-                    //countTimer.stop()
-                    //breakTimer.stop()
-                    //countTimer.counter = 0
-                    //breakTimer.counter = 0
-                    startButton.text = "Start"
-                    breakButton.text = "Pause"
-                    endingTime.text = endtime
-                    startButtonBg.color = "#d6d7d7"
-                    pauseButtonBg.color = "#d6d7d7"
-                }
+                    if (startButton.startButIsPressed === true) {
+                        var date = new Date()
+                        var endtime = Qt.formatTime(date, "hh:mm:ss")
+                        var stopFlag = true
 
+                        mainwindow.stopCounter()
+                        mainwindow.stopPCounter()
+                        mainwindow.endTime(endtime)
+                        var now = new Date()
+                        var formated_str = Qt.formatDate(now, "dd_MMMM_yyyy")
+                        console.log("formated date in end btn: ", formated_str)
+
+                        mainwindow.calculatetime(formated_str)
+                        //countTimer.stop()
+                        //breakTimer.stop()
+                        //countTimer.counter = 0
+                        //breakTimer.counter = 0
+                        startButton.text = "Start"
+                        breakButton.text = "Pause"
+                        endingTime.text = endtime
+                        startButtonBg.color = "#d6d7d7"
+                        pauseButtonBg.color = "#d6d7d7"
+                        startButton.startButIsPressed = false
+                        mainwindow.js_startBtn = "Start"
+                        mainwindow.js_pauseBtn = "Pause"
+                        mainwindow.js_startTime = "HH:MM:SS"
+                        mainwindow.js_status = 0
+                        mainwindow.exitSaveData()
+                    }
+                }
                 Image {
                     id: stopButton
                     x: parent.width * 5 / 6 - 10
@@ -374,24 +422,24 @@ Window {
 
             RoundButton {
                 id: resetButton
-                width: parent.width * 0.40
+                width: parent.width * 0.35
                 height: parent.height // * 0.075
                 radius: 10
                 text: "Reset"
                 anchors.right: parent.right
-                anchors.rightMargin: 25
+                anchors.rightMargin: 35
                 leftPadding: 20
-
                 font.pixelSize: parent.width * 0.025 + parent.height * 0.05
                 font.family: "Square721 BT"
                 onClicked: {
                     summaryTime.font.pixelSize = mainbox.height * 0.05 + mainbox.width * 0.1
-                    summaryTime.font.family = "Kristen ITC"
+                    summaryTime.font.family = "Square721 BT"
+                    summaryTime.font.bold = false
+                    summaryTime.color = "#000000"
                     summaryTime.text = qsTr("HH:MM:SS")
                     startingTime.text = qsTr("HH:MM:SS")
                     endingTime.text = qsTr("HH:MM:SS")
                 }
-
                 Image {
                     id: reset
                     x: parent.width * 5 / 6 - 10
@@ -407,43 +455,53 @@ Window {
         Rectangle {
             id: rectangle3
             width: parent.width * 0.9
-            height: parent.height * 0.3
+            height: parent.height * 0.35
+            color: "#42ffffff"
+            //color: "black"
             radius: 10
-            gradient: Gradient {
+
+            Gradient {
+                id: gradient2
                 GradientStop {
-                    position: 0
+                    position: 0.0
                     color: "#fdfdfd"
                 }
-
                 GradientStop {
-                    position: 1
+                    position: 1.0
                     color: "#86525252"
                 }
                 orientation: Gradient.Vertical
             }
+
             anchors.verticalCenterOffset: -25
             anchors.centerIn: parent
 
             Text {
                 id: summaryTime
-
-                width: parent.width
-                height: parent.height
-                //height: parent.height * 0.75
+                color: "#202020"
                 text: qsTr("HH:MM:SS")
-
-                font.pixelSize: parent.height * 0.05 + parent.width * 0.10
-                font.family: "Kristen ITC"
-                font.bold: true
-                style: Text.Raised
+                font.pixelSize: mainbox.height * 0.05 + mainbox.width * 0.1
+                font.family: "Square721 BT"
+                font.bold: false
+                style: Text.Outline
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: 0
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 4
+                    radius: 8.0
+                    samples: 17
+                    color: "#80000000" // Semi-transparent black
+                    transparentBorder: true
+                }
             }
         }
 
         Row {
+
             id: upperRow
             width: parent.width
             height: parent.height * 0.2
@@ -452,6 +510,7 @@ Window {
             leftPadding: 20
 
             RoundButton {
+                property bool startButIsPressed: false
                 id: startButton
                 width: parent.width * 0.40
                 height: parent.height
@@ -470,18 +529,12 @@ Window {
 
                     Text {
                         id: startButtonText
-
                         text: startButton.text
                         font.family: "Square721 BT"
                         font.pointSize: parent.width * 0.1 + parent.height * 0.1
                         style: Text.Raised
-                        //color: startButton.down ? "#e20404" : "#ff7c7e"
-
-                        // Alignment
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
-
-                        // Center in button
                         anchors.fill: parent
                     }
                     Image {
@@ -514,23 +567,25 @@ Window {
                 }
 
                 onClicked: {
-                    mainwindow.getCurrentDateTime()
-                    startButton.font.pointSize = parent.width * 0.01 + parent.height * 0.02
-                    mainwindow.stopPCounter()
-                    if (breakButton.text !== "Pause") {
-                        breakButton.text = "Pause"
+                    if (startButton.startButIsPressed === false) {
+                        mainwindow.getCurrentDateTime()
+                        startButton.font.pointSize = parent.width * 0.01 + parent.height * 0.02
+                        mainwindow.stopPCounter()
+                        if (breakButton.text !== "Pause") {
+                            breakButton.text = "Pause"
+                        }
+                        startButtonBg.color = "#bc15ff00"
+                        if (pauseButtonBg.color !== "#d6d7d7") {
+                            pauseButtonBg.color = "#d6d7d7"
+                        }
+                        startButton.startButIsPressed = true
+                        mainwindow.js_pauseBtn = "Pause"
+                        mainwindow.startBtnState = true
+                        // console.log("start but is pressed, property is set to ",
+                        //             startButton.startButIsPressed)
+                        console.log("start but is pressed, property is set to ",
+                                    mainwindow.startBtnState)
                     }
-                    // if (breakTimer.counter !== "0") {
-                    //     breakTimer.counter = 0
-                    // }
-                    // breakTimer.stop()
-                    //mainwindow.calculatetime()
-                    startButtonBg.color = "#bc15ff00"
-                    if (pauseButtonBg.color !== "#d6d7d7") {
-                        pauseButtonBg.color = "#d6d7d7"
-                    }
-
-                    //countTimer.start()
                 }
             }
 
@@ -565,7 +620,7 @@ Window {
                         verticalOffset: 4
                         radius: 8.0
                         samples: 17
-                        color: "#80000000" // Semi-transparent black
+                        color: "#80000000"
                         transparentBorder: true
                     }
                 }
@@ -590,33 +645,28 @@ Window {
                         id: pauseButtonText
                         text: breakButton.text
                         font.family: "Square721 BT"
-                        font.pointSize: parent.width * 0.1 + parent.height * 0.1
-                        //adaptive fontsize
-                        // parent.width * 0.075 + parent.height
-                        //             * 0.15 //parent.width * 0.1 + parent.height * 0.1 //18pt feets well enough
+                        font.pointSize: parent.width * 0.11 + parent.height * 0.11
                         style: Text.Raised
-                        //color: startButton.down ? "#e20404" : "#ff7c7e"
-
-                        // Alignment
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
-                        font.bold: false
-
-                        // Center in button
-                        //anchors.left: breakButton.left
-                        //anchors.leftMargin: 5
                         anchors.fill: parent
                     }
                 }
 
                 onClicked: {
-                    mainwindow.writeDataTime(startButton.text)
-                    startButton.text = "Start"
-                    var stopFlag = false
-                    mainwindow.stopCounter()
-                    mainwindow.timecounterForPause()
-                    startButtonBg.color = "#d6d7d7"
-                    pauseButtonBg.color = "#c1ffe100"
+                    if (startButton.startButIsPressed === true) {
+                        mainwindow.writeDataTime(startButton.text)
+                        startButton.text = "Start"
+                        var stopFlag = false
+                        mainwindow.stopCounter()
+                        console.log(startButton.startButIsPressed)
+
+                        mainwindow.timecounterForPause()
+                        startButtonBg.color = "#d6d7d7"
+                        pauseButtonBg.color = "#c1ffe100"
+                        startButton.startButIsPressed = false
+                        mainwindow.js_startBtn = "Start"
+                    }
                 }
             }
         }
@@ -626,10 +676,37 @@ Window {
         id: calendarbox
         height: parent.height * 0.40
         width: parent.width
-        color: "#02ffffff"
+        color: "#99ffffff"
         x: (parent.width - calendarbox.width) / 2
         y: mainbox.height + currentDate.height + 10
+        radius: 10
+        //  Gradient {
+        //     GradientStop {
+        //         position: 0
+        //         color: "#6a000000"
+        //     }
 
+        //     GradientStop {
+        //         position: 1
+        //         color: "#fee140"
+        //     }
+        //     orientation: Gradient.Vertical
+        // }
+        // gradient: Gradient {
+        //     id: calendarBoxGradient
+
+        //         GradientStop {
+        //             position: 0.0
+        //             color: "#fdfdfd"
+        //         }
+        //         GradientStop {
+        //             position: 1.0
+        //             color: "#86525252"
+
+        //     }
+
+        //     orientation: Gradient.Vertical
+        // }
         ColumnLayout {
             id: column
             x: 0
@@ -765,7 +842,15 @@ Window {
                 year: new Date().getFullYear()
 
                 locale: Qt.locale("en_US")
-
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 4
+                    radius: 8.0
+                    samples: 17
+                    color: "#80000000" // Semi-transparent black
+                    transparentBorder: true
+                }
                 delegate: Rectangle {
                     required property var model
 
@@ -843,7 +928,7 @@ Window {
                                              "dddd, d MMMM, yyyy") : ""
                     font.pixelSize: 16
                     anchors.verticalCenterOffset: 1
-                    anchors.horizontalCenterOffset: 15
+                    anchors.horizontalCenterOffset: 0
                     color: "#1976D2"
                 }
             }
@@ -885,6 +970,11 @@ Window {
             startButton.font.family = "Square721 BT"
             startButton.font.pointSize = upperRow.width * 0.01 + upperRow.height * 0.02
             startButton.style = Text.Raised
+            // auto-start settings:
+            // if (cntr) {
+            //     startButton.startButIsPressed = true
+            //     startButtonBg.color = "#bc15ff00"
+            // }
         }
         onSendCounterToPauseBtn: function (pause_cntr) {
             console.log("pause cntr: ", pause_cntr)
@@ -893,17 +983,33 @@ Window {
             breakButton.font.pointSize = upperRow.width * 0.01 + upperRow.height * 0.02
             breakButton.style = Text.Raised
         }
-        onStartButPressed: {
-            //console.log(startedTime)
+        onStartButPressed: function (startedTime) {
+            console.log(startedTime)
             startingTime.text = startedTime
         }
-        onTotalTimeShow: {
+        onTotalTimeShow: function (totalTime) {
             summaryTime.text = totalTime
             //console.log("totalTime qml side: ", totalTime)
-            summaryTime.font.pixelSize = mainbox.height * 0.075 + mainbox.width * 0.15
-            summaryTime.font.family = "Kristen ITC"
-            summaryTime.color = "green"
-            hrsPrDay.text = totalTime
+            summaryTime.font.pixelSize = mainbox.height * 0.06 + mainbox.width * 0.12
+            summaryTime.font.family = "Square721 BT"
+            summaryTime.font.bold = false
+            summaryTime.color = "#ffdb00"
+            summaryTime.style = Text.Raised
+            //rectangle3.gradientType = 0
+            hrsPrDay.text = timeStringToDecimalHours(totalTime)
+        }
+        function timeStringToDecimalHours(timeStr) {
+            var parts = timeStr.split(":")
+            var hours = parseInt(parts[0])
+            var minutes = parseInt(parts[1])
+            var seconds = parseInt(parts[2])
+
+            var decimalHours = hours + (minutes / 60) + (seconds / 3600)
+            return decimalHours.toFixed(2) // Returns "0.39"
+        }
+
+        function onAppStatusChanged() {
+            console.log("App status changed to:", mainwindow.appStatus)
         }
     }
 
@@ -916,24 +1022,18 @@ Window {
 
     RoundButton {
         id: exitButton
-        radius: 5
+        radius: 100
         text: " "
-        anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.rightMargin: 5
         anchors.bottomMargin: 5
-        width: parent.width * 0.15
-        height: parent.height * 0.05
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.07
+        height: parent.width * 0.07
         Image {
             id: exit
-            width: parent.width
-            height: parent.height
+            visible: true
             anchors.fill: parent
-            anchors.leftMargin: 1
-            anchors.rightMargin: 1
-            anchors.topMargin: 1
-            anchors.bottomMargin: 1
-            source: "rsc/exit.png"
+            source: "rsc/no.png"
             fillMode: Image.PreserveAspectFit
         }
         onClicked: {
@@ -984,7 +1084,7 @@ Window {
                 id: datetext
                 width: parent.width
                 height: parent.height
-                font.pixelSize: parent.width * 0.03 + parent.height * 0.075
+                font.pixelSize: 24 //parent.width * 0.03 + parent.height * 0.075
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -1106,6 +1206,12 @@ Window {
                                         text: model.text2
                                         property bool isUpdating: false
 
+                                        onActiveFocusChanged: {
+                                            if (activeFocus) {
+                                                selectAll()
+                                            }
+                                        }
+
                                         onTextChanged: {
                                             if (isUpdating)
                                                 return
@@ -1181,9 +1287,9 @@ Window {
 
                                     //anchors.fill: parent
                                     RoundButton {
-                                        width: 50 //window.width * 0.1 //gridPopup.width * 0.1
-                                        height: 40 //window.height * 0.05
-                                        radius: 5 //gridPopup.height
+                                        width: 35 //window.width * 0.1 //gridPopup.width * 0.1
+                                        height: 35 //window.height * 0.05
+                                        radius: 15 //gridPopup.height
                                         text: " "
                                         anchors.verticalCenter: parent.verticalCenter
 
@@ -1205,7 +1311,7 @@ Window {
 
                                                 //anchors.right: parent.right
                                                 //anchors.rightMargin: 0
-                                                source: "rsc/submit.png"
+                                                source: "rsc/done.png"
 
                                                 fillMode: Image.PreserveAspectFit
                                             }
@@ -1213,8 +1319,9 @@ Window {
 
                                         background: Rectangle {
 
-                                            color: parent.down ? "#999999" : "#c4c4c4"
-
+                                            //color: "#00000000"
+                                            color: parent.down ? "#999999" : "#00000000"
+                                            //color:
                                             radius: parent.radius
                                         }
                                         onClicked: {
@@ -1273,7 +1380,7 @@ Window {
             // }
             Text {
                 id: totalAmountHrs
-                font.pixelSize: parent.width * 0.05 + parent.height * 0.1 // has to be adaptive
+                font.pixelSize: 22 //parent.width * 0.05 + parent.height * 0.1 // has to be adaptive
                 // horizontalAlignment: Text.AlignRight - 15
                 // verticalAlignment: Text.AlignVCenter
                 text: "0"
@@ -1286,7 +1393,7 @@ Window {
                 id: totalText
                 // width: parent.width
                 // height: parent.height
-                font.pixelSize: parent.width * 0.03 + parent.height * 0.075 // has to be adaptive
+                font.pixelSize: 18 //parent.width * 0.03 + parent.height * 0.075 // has to be adaptive
                 // horizontalAlignment: Text.AlignLeft + 15
                 // verticalAlignment: Text.AlignVCenter
                 text: "Total:"
@@ -1323,7 +1430,7 @@ Window {
                 id: statText
                 width: parent.width
                 height: parent.height
-                font.pixelSize: parent.width * 0.03 + parent.height * 0.075
+                font.pixelSize: 24 //parent.width * 0.1 + parent.height * 0.2
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 text: "data for " + monthBut.text
@@ -1391,18 +1498,20 @@ Window {
 
                     Text {
                         id: text1
-                        text: qsTr("pr day")
-                        font.pixelSize: parent.height * 0.1 + parent.width * 0.1
+                        text: qsTr("Today")
+                        font.pixelSize: 14 //parent.height * 0.1 + parent.width * 0.1
                         anchors.verticalCenterOffset: -10
                         anchors.centerIn: parent
+                        fontSizeMode: Text.HorizontalFit
+                        font.weight: Font.Normal
                     }
 
                     Text {
                         id: hrsPrDay
                         text: qsTr("HOURS")
                         anchors.top: text1.bottom
-                        anchors.topMargin: 3
-                        font.pixelSize: 14
+                        anchors.topMargin: 0
+                        font.pixelSize: 12
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
@@ -1431,17 +1540,19 @@ Window {
                     Text {
                         id: text3
                         text: qsTr("Max pr day")
-                        font.pixelSize: parent.width * 0.1 + parent.height * 0.1
+                        font.pixelSize: 14 //parent.width * 0.1 + parent.height * 0.1
                         anchors.centerIn: parent
                         anchors.verticalCenterOffset: -10
+                        fontSizeMode: Text.HorizontalFit
+                        font.weight: Font.Normal
                     }
 
                     Text {
                         id: longestTime
                         text: qsTr("DATE")
                         anchors.top: text3.bottom
-                        anchors.topMargin: 3
-                        font.pixelSize: 14
+                        anchors.topMargin: 0
+                        font.pixelSize: 12
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
@@ -1479,21 +1590,19 @@ Window {
                         id: tHrs
                         text: qsTr("HOURS")
                         anchors.top: text6.bottom
-                        anchors.topMargin: 3
-                        font.pixelSize: 14
+                        anchors.topMargin: 0
+                        font.pixelSize: 12
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
 
                     Text {
                         id: text6
-                        text: qsTr("Total pr month")
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.leftMargin: 10
-                        anchors.rightMargin: 10
-                        font.pixelSize: parent.width * 0.1 + parent.height * 0.1
+                        text: qsTr("Total/month")
+                        font.pixelSize: 13 //parent.width * 0.1 + parent.height * 0.1
+                        anchors.centerIn: parent
                         anchors.verticalCenterOffset: -10
+                        fontSizeMode: Text.HorizontalFit
+                        font.weight: Font.Normal
                     }
                     //anchors.verticalCenter: parent.verticalCenter
                 }
@@ -1561,28 +1670,32 @@ Window {
                 height: window.isPortrait ? 35 : 45
                 radius: 5
 
-                text: "get xls"
+                text: "get txt"
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.rightMargin: 0 //window.isPortrait ? 1 : 0
-                anchors.bottomMargin: 0 //window.isPortrait ? 1 : 0
+                anchors.rightMargin: window.isPortrait ? 0 : -2
+                anchors.bottomMargin: window.isPortrait ? -7 : -10
                 onClicked: {
 
                     fileDialog.open()
+                    // mainwindow.writeToCSV(statBottomLine.cats,
+                    //                       statBottomLine.time, monthBut.text)
                 }
             }
             FileDialog {
                 id: fileDialog
                 title: "Save CSV File"
 
-                nameFilters: ["CSV files (*.csv)", "All files (*)"]
-                defaultSuffix: "csv"
+                nameFilters: ["TXT files (*.txt)", "CSV files (*.csv)", "All files (*)"]
+                defaultSuffix: "txt"
                 fileMode: FileDialog.SaveFile
                 currentFolder: mainwindow.csvPath //has to be incl into func writeToCSV ars
                 onAccepted: {
 
                     mainwindow.writeToCSV(statBottomLine.cats,
-                                          statBottomLine.time, monthBut.text)
+                                          statBottomLine.time,
+                                          selectedFile.toString())
+                    console.log("file name -> ", selectedFile)
                 }
             }
         }

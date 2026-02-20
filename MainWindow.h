@@ -3,17 +3,29 @@
 
 #include <QMainWindow>
 #include <QObject>
+#include <qqmlintegration.h>
 #include <QWidget>
 #include <QString>
 #include <QCalendar>
 #include <QDateTime>
 #include <QVector>
 #include <QTimer>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 class MainWindow : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
     Q_PROPERTY(QString storagePath READ storagePath) //added from exmple
+    Q_PROPERTY(QString js_startBtn MEMBER js_startBtn)
+    Q_PROPERTY(QString js_pauseBtn MEMBER js_pauseBtn)
+    Q_PROPERTY(QString js_startTime MEMBER js_startTime)
+    Q_PROPERTY(bool js_status MEMBER js_status)
+
+    Q_PROPERTY(bool startButState MEMBER startButState)    ///!!!!
+    Q_PROPERTY(bool pauseBtnState MEMBER pauseBtnState)
+    Q_PROPERTY(bool endBtnState MEMBER endBtnState)
 public:
     explicit MainWindow(QObject *parent = nullptr);
     //from example bellow
@@ -52,21 +64,30 @@ public slots:
     void on_pTimeout();
     void stopPCounter();
     void exitSaveData();
-    void autoStart();
-    void LaunchInfo();
-    void colectAppData(QString, QString);
 
+    void saveAppStatus();
+    void loadAppStatus();
+    void statusMonitor();
 
 private:
+    QString js_startBtn;
+    QString js_pauseBtn;
+    QString js_startTime;
+    bool js_status;
+
+    QDateTime currentDatetime = QDateTime::currentDateTime();
     QTimer *timer = nullptr;
     QTimer *pause_timer = nullptr;
+    QTimer *monitor_timer = nullptr;
     int elapsedSeconds = 0;
     int pause_elapsedSeconds = 0;
     qint64 diffSeconds = 0;
+    qint64 pause_diffSeconds = 0;
+    qint64 PdiffSeconds = 0;
     QString csvPath;
     QString cntr;
-    QString diffStr;
-    QString diffStr_pause;
+    QString diffStr = " ";
+    QString diffStr_pause = " ";
     int diff_sec = 0;
     QString pause_cntr;
     QString startedTime;
@@ -84,8 +105,11 @@ private:
     bool startFlag = true;
     bool* pauseFlag;
     bool stopFlag;
-    QString appDataPath;
-    QString isRunning = "false";
+    QString jsonAppDataPath;
+    bool isRunning = false;
+    bool startButState;
+    bool pauseBtnState;
+    bool endBtnState;
     void initializePath();
 };
 
