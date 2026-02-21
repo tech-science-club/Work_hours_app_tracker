@@ -1,4 +1,4 @@
-import QtQuick 2.16
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtCharts 2.10
@@ -19,23 +19,6 @@ Window {
     property bool isPortrait: width < height
     property bool isLandscape: width > height
 
-    // }
-    // Component.onCompleted: {
-    //     console.log("Auto-starting from previous session", mainwindow.js_status)
-    //     if (mainwindow.js_status) {
-    //         // console.log("Auto-starting from previous session",
-    //         //             mainwindow.js_startBtn)
-    //         if (mainwindow.js_startBtn !== "Start"
-    //                 || mainwindow.js_startBtn !== " ") {
-    //             startButton.clicked()
-    //             //mainwindow.startFlag === false
-    //         }
-    //         if (mainwindow.js_pauseBtn !== "Pause"
-    //                 || mainwindow.js_pauseBtn !== " ") {
-    //             breakButton.clicked()
-    //         }
-    //     }
-    // }
     BorderImage {
         id: borderImage
         width: window.width
@@ -43,14 +26,7 @@ Window {
         visible: true
         source: "rsc/background.jpg"
         clip: true
-        // FontLoader {
-        //     id: candara
-        //     source: "qrc:/rsc/fonts/Candara.ttf"
-        // }
-        // FontLoader {
-        //     id: Square721 BT
-        //     source: "qrc:/rsc/fonts/square-721-bt/Square721 BTBTRoman.ttf"
-        // }
+
         Text {
             id: currentDate
             x: 0
@@ -58,17 +34,9 @@ Window {
             width: parent.width
             height: parent.height * 0.05
             color: "#6c0052"
-
-            font.pointSize: parent.height * 0.01 + parent.width * 0.02
+            font.pointSize: parent.height * 0.015 + parent.width * 0.03
             horizontalAlignment: Text.AlignHCenter
-
             text: dateText.text
-
-
-            /*{
-                //var now = new Date()
-                //now.toLocaleDateString()
-            }*/
             font.family: "Candara"
             style: Text.Raised
         }
@@ -84,14 +52,9 @@ Window {
 
                 PropertyChanges {
                     target: mainbox
-                    // x: 0
-                    // y: currentDate.height + 5
                     anchors.bottom: parent.bottom
-                    //anchors.top: currentDate.bottom
                     anchors.bottomMargin: parent.height * 0.5
-                    //anchors.topMargin: 10
                     anchors.top: parent.top
-                    //anchors.bottomMargin: 10
                     anchors.topMargin: parent.height * 0.1
                 }
                 PropertyChanges {
@@ -99,12 +62,8 @@ Window {
                     height: parent.height * 0.40
                     width: parent.width
                     color: "#02ffffff"
-
-                    // x: (parent.width - calendarbox.width) / 2
-                    // y: mainbox.height + currentDate.height + 10
                     anchors.verticalCenter: undefined
                     anchors.left: undefined
-
                     anchors.right: undefined
                     anchors.top: parent.top
                     anchors.topMargin: parent.height * 0.5
@@ -205,10 +164,6 @@ Window {
                     anchors.right: undefined
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    // anchors.leftMargin: 0
-                    // anchors.rightMargin: 0
-                    // anchors.topMargin: 0
-                    // anchors.bottomMargin: 0
                 }
 
                 PropertyChanges {
@@ -293,13 +248,10 @@ Window {
 
             Row {
                 id: row2
-                //width: 302.1
+                x: 8
                 height: parent.height
-                // anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.01
-                //x: endButton.x + 10
-                //y: rowLayout.y + 50
                 spacing: 5
                 Text {
                     id: startTime1
@@ -309,7 +261,6 @@ Window {
 
                 Text {
                     id: endingTime
-
                     text: qsTr("HH:MM:SS")
                     font.pointSize: (parent.width * 0.05 + parent.height * 0.5) / 2
                 }
@@ -328,9 +279,6 @@ Window {
             Row {
                 id: row
                 x: 8
-                // x: 2
-                // y: 12
-                //width: parent.width * 0.2
                 height: parent.height
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.01
@@ -339,7 +287,6 @@ Window {
                     id: startTime
                     text: qsTr("Started at:")
                     font.pointSize: (parent.width * 0.05 + parent.height * 0.5) / 2
-                    //font.family: candara.name
                 }
 
                 Text {
@@ -379,27 +326,18 @@ Window {
 
                         mainwindow.stopCounter()
                         mainwindow.stopPCounter()
-                        mainwindow.endTime(endtime)
+                        mainwindow.onEnd()
                         var now = new Date()
                         var formated_str = Qt.formatDate(now, "dd_MMMM_yyyy")
                         console.log("formated date in end btn: ", formated_str)
 
                         mainwindow.calculatetime(formated_str)
-                        //countTimer.stop()
-                        //breakTimer.stop()
-                        //countTimer.counter = 0
-                        //breakTimer.counter = 0
                         startButton.text = "Start"
                         breakButton.text = "Pause"
                         endingTime.text = endtime
                         startButtonBg.color = "#d6d7d7"
                         pauseButtonBg.color = "#d6d7d7"
                         startButton.startButIsPressed = false
-                        mainwindow.js_startBtn = "Start"
-                        mainwindow.js_pauseBtn = "Pause"
-                        mainwindow.js_startTime = "HH:MM:SS"
-                        mainwindow.js_status = 0
-                        mainwindow.exitSaveData()
                     }
                 }
                 Image {
@@ -521,7 +459,6 @@ Window {
                 leftInset: 5
                 leftPadding: 5
                 bottomPadding: 12
-                //font.pointSize: parent.width * 0.025 + parent.height * 0.05
                 contentItem: Row {
                     id: startButtonRow
                     anchors.centerIn: parent
@@ -565,10 +502,9 @@ Window {
                         transparentBorder: true
                     }
                 }
-
-                onClicked: {
+                function startClick() {
                     if (startButton.startButIsPressed === false) {
-                        mainwindow.getCurrentDateTime()
+                        mainwindow.onStart()
                         startButton.font.pointSize = parent.width * 0.01 + parent.height * 0.02
                         mainwindow.stopPCounter()
                         if (breakButton.text !== "Pause") {
@@ -579,14 +515,10 @@ Window {
                             pauseButtonBg.color = "#d6d7d7"
                         }
                         startButton.startButIsPressed = true
-                        mainwindow.js_pauseBtn = "Pause"
-                        mainwindow.startBtnState = true
-                        // console.log("start but is pressed, property is set to ",
-                        //             startButton.startButIsPressed)
-                        console.log("start but is pressed, property is set to ",
-                                    mainwindow.startBtnState)
                     }
                 }
+
+                onClicked: startClick()
             }
 
             Item {
@@ -599,7 +531,7 @@ Window {
             }
 
             RoundButton {
-
+                property bool pauseButIsPressed: false
                 id: breakButton
                 width: parent.width * 0.40
                 height: parent.height
@@ -655,18 +587,20 @@ Window {
 
                 onClicked: {
                     if (startButton.startButIsPressed === true) {
-                        mainwindow.writeDataTime(startButton.text)
+                        var pauseFlag = false
+                        mainwindow.onPause()
                         startButton.text = "Start"
                         var stopFlag = false
                         mainwindow.stopCounter()
-                        console.log(startButton.startButIsPressed)
+                        console.log("mainwindow.js_pauseBtn ",
+                                    mainwindow.js_pauseBtn)
 
                         mainwindow.timecounterForPause()
                         startButtonBg.color = "#d6d7d7"
                         pauseButtonBg.color = "#c1ffe100"
                         startButton.startButIsPressed = false
-                        mainwindow.js_startBtn = "Start"
                     }
+                    breakButton.pauseButIsPressed = true
                 }
             }
         }
@@ -680,33 +614,7 @@ Window {
         x: (parent.width - calendarbox.width) / 2
         y: mainbox.height + currentDate.height + 10
         radius: 10
-        //  Gradient {
-        //     GradientStop {
-        //         position: 0
-        //         color: "#6a000000"
-        //     }
 
-        //     GradientStop {
-        //         position: 1
-        //         color: "#fee140"
-        //     }
-        //     orientation: Gradient.Vertical
-        // }
-        // gradient: Gradient {
-        //     id: calendarBoxGradient
-
-        //         GradientStop {
-        //             position: 0.0
-        //             color: "#fdfdfd"
-        //         }
-        //         GradientStop {
-        //             position: 1.0
-        //             color: "#86525252"
-
-        //     }
-
-        //     orientation: Gradient.Vertical
-        // }
         ColumnLayout {
             id: column
             x: 0
@@ -775,13 +683,8 @@ Window {
                         font.bold: true
                         width: parent.width * 0.9
                         height: parent.height
-
-                        //styleColor: "#f7f3f3"
-                        //style: Text.Outline
-                        //color: "#3f3f3f"
                         onClicked: {
                             statPopup.open()
-                            //send month name to cpp
                             mainwindow.monthInfo(monthBut.text)
                         }
                     }
@@ -793,10 +696,7 @@ Window {
                         Layout.fillHeight: true
                         Layout.rightMargin: 5
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
                         height: rectangle.height * 0.8
-
-                        //y: (rectangle.height - toRight.height) / 2
                         onClicked: {
                             if (monthGrid.month === 11) {
                                 monthGrid.month = 0
@@ -830,11 +730,6 @@ Window {
             MonthGrid {
                 id: monthGrid
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                //Layout.rightMargin: 20
-                // width: parent.width - 50
-                // height: parent.height * 0.8
-                // x: parent.width / 2 - monthGrid.width / 2
-                // y: window.height*0.25
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.minimumHeight: parent.height * 0.5
@@ -907,10 +802,6 @@ Window {
                 id: getDateData
                 width: parent.width
                 height: parent.height
-                //x: 8
-                //y: 5
-                //width: 420
-                //height: 40
                 Layout.fillWidth: true
                 radius: 10
                 text: ""
@@ -932,8 +823,6 @@ Window {
                     color: "#1976D2"
                 }
             }
-
-            // Selected date display
         }
     }
 
@@ -964,24 +853,22 @@ Window {
     /*----------------- sumary time on the screen ----------------*/
     Connections {
         target: mainwindow
-        onSendCounterToBtn: function (cntr) {
-            //console.log("cntr: ", cntr)
+        onSendCounterToBtn: function (cntr, isPressed) {
+            startButton.startClick()
             startButton.text = cntr
             startButton.font.family = "Square721 BT"
             startButton.font.pointSize = upperRow.width * 0.01 + upperRow.height * 0.02
-            startButton.style = Text.Raised
-            // auto-start settings:
-            // if (cntr) {
-            //     startButton.startButIsPressed = true
-            //     startButtonBg.color = "#bc15ff00"
-            // }
+            startButtonBg.color = "#bc15ff00"
         }
-        onSendCounterToPauseBtn: function (pause_cntr) {
-            console.log("pause cntr: ", pause_cntr)
+        onSendCounterToPauseBtn: function (pause_cntr, isPressed) {
+            startButton.startButIsPressed = false
+            pauseButtonBg.color = "#c1ffe100"
             breakButton.text = pause_cntr
             breakButton.font.family = "Square721 BT"
             breakButton.font.pointSize = upperRow.width * 0.01 + upperRow.height * 0.02
-            breakButton.style = Text.Raised
+            if (isPressed) {
+
+            }
         }
         onStartButPressed: function (startedTime) {
             console.log(startedTime)
@@ -989,13 +876,11 @@ Window {
         }
         onTotalTimeShow: function (totalTime) {
             summaryTime.text = totalTime
-            //console.log("totalTime qml side: ", totalTime)
             summaryTime.font.pixelSize = mainbox.height * 0.06 + mainbox.width * 0.12
             summaryTime.font.family = "Square721 BT"
             summaryTime.font.bold = false
             summaryTime.color = "#ffdb00"
             summaryTime.style = Text.Raised
-            //rectangle3.gradientType = 0
             hrsPrDay.text = timeStringToDecimalHours(totalTime)
         }
         function timeStringToDecimalHours(timeStr) {
@@ -1024,9 +909,10 @@ Window {
         id: exitButton
         radius: 100
         text: " "
+        anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
         width: parent.width * 0.07
         height: parent.width * 0.07
         Image {
@@ -1037,10 +923,7 @@ Window {
             fillMode: Image.PreserveAspectFit
         }
         onClicked: {
-            // Save data first
-            //saveData()
             mainwindow.exitSaveData()
-            // Then exit
             Qt.quit()
         }
     }
@@ -1100,14 +983,13 @@ Window {
 
             //color: "#11b90f"
             Connections {
-                target: mainwindow // Your C++ object
+                target: mainwindow
                 onSendDateHeader: function (name) {
-                    //datetext.text = name
+
                     var txt = name
                     var formated_str = txt.replace(/_/g, " ")
                     datetext.text = formated_str
-                    console.log("Received:",
-                                datetext.text) //has to be reseted after pop up demolishing
+                    console.log("Received:", datetext.text)
                 }
 
                 onSendDataToPopup: function (param1, cnt, total_time) {
@@ -1120,7 +1002,6 @@ Window {
                                         "text2": items[1] || " - "
                                     })
                     console.log("items:", cnt, items[0], items[1])
-                    //console.log("rowmodel cnt: ", rowModel.count)
                     console.log("[total time]: ", tt_rounded)
                     totalAmountHrs.text = tt_rounded
                 }
@@ -1142,16 +1023,14 @@ Window {
                 contentWidth: gridPopup.width
                 contentHeight: gridPopup.height
                 clip: true
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff // Hide horizontal
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                 ScrollBar.vertical.policy: ScrollBar.AsNeeded
                 Column {
                     id: gridPopup
                     width: scrollView.width
                     spacing: 2
-                    //height: parent.height
                     Repeater {
                         model: rowModel
-                        // Each iteration creates 4 cells (one complete row)
                         delegate: Rectangle {
 
                             width: parent.width
@@ -1171,8 +1050,6 @@ Window {
                                         font.bold: true
                                     }
                                 }
-
-                                // Column 1: Text Part 1
                                 Rectangle {
                                     width: gridPopup.width * 0.3
                                     height: 40
@@ -1183,8 +1060,6 @@ Window {
                                         text: model.text1
                                     }
                                 }
-
-                                // Column 2: Text Part 2
                                 Rectangle {
                                     width: gridPopup.width * 0.4
                                     height: 40
@@ -1196,7 +1071,7 @@ Window {
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.left: parent.left
                                         anchors.leftMargin: 1
-                                        // ✅ Centered
+
                                         source: "rsc/edit.png"
                                         fillMode: Image.PreserveAspectFit
                                     }
@@ -1218,26 +1093,18 @@ Window {
                                             isUpdating = true
 
                                             var curPos = cursorPosition
-
-                                            // Count digits in the text UP TO cursor position
                                             var textUpToCursor = text.substring(
                                                         0, curPos)
                                             var digitsTyped = textUpToCursor.replace(
                                                         /[^\d]/g, "").length
-
-                                            // Get ALL digits from entire text
                                             var allDigits = text.replace(
                                                         /[^\d]/g, "")
-
-                                            // Limit to 6
                                             if (allDigits.length > 6) {
                                                 allDigits = allDigits.substring(
                                                             0, 6)
                                                 digitsTyped = Math.min(
                                                             digitsTyped, 6)
                                             }
-
-                                            // Format the time
                                             var formatted = ""
                                             if (allDigits.length > 0) {
                                                 formatted = allDigits.substring(
@@ -1255,12 +1122,7 @@ Window {
                                                 formatted += ":" + allDigits.substring(
                                                             4, 6)
                                             }
-
-                                            // Apply text
                                             text = formatted
-
-                                            // Position cursor AFTER the number of digits we typed
-                                            // Formula: digitPosition + number of colons before it
                                             var newCursorPos = digitsTyped
                                             if (digitsTyped > 2)
                                                 newCursorPos += 1 // Add 1 for first ":"
@@ -1277,25 +1139,18 @@ Window {
                                         }
                                     }
                                 }
-
-                                // Column 3: Button
                                 Rectangle {
                                     id: rectangle1
                                     width: gridPopup.width * 0.2
                                     height: 40
                                     color: "lightyellow"
-
-                                    //anchors.fill: parent
                                     RoundButton {
-                                        width: 35 //window.width * 0.1 //gridPopup.width * 0.1
-                                        height: 35 //window.height * 0.05
-                                        radius: 15 //gridPopup.height
+                                        width: 35
+                                        height: 35
+                                        radius: 15
                                         text: " "
                                         anchors.verticalCenter: parent.verticalCenter
-
-                                        // anchors.left: edit.right
                                         anchors.right: parent.right
-                                        // anchors.leftMargin: 5
                                         anchors.rightMargin: 0
                                         contentItem: Item {
                                             id: item3
@@ -1308,9 +1163,6 @@ Window {
                                                 anchors.rightMargin: 1
                                                 anchors.topMargin: 1
                                                 anchors.bottomMargin: 1
-
-                                                //anchors.right: parent.right
-                                                //anchors.rightMargin: 0
                                                 source: "rsc/done.png"
 
                                                 fillMode: Image.PreserveAspectFit
@@ -1318,20 +1170,16 @@ Window {
                                         }
 
                                         background: Rectangle {
-
-                                            //color: "#00000000"
                                             color: parent.down ? "#999999" : "#00000000"
                                             //color:
                                             radius: parent.radius
                                         }
                                         onClicked: {
                                             var dataString = ""
-
                                             for (var i = 0; i < rowModel.count; i++) {
                                                 var item = rowModel.get(i)
                                                 dataString += item.text1 + "," + item.text2 + "\n"
                                             }
-
                                             console.log(dataString)
                                             mainwindow.overWrite(dataString,
                                                                  datetext.text)
@@ -1357,32 +1205,9 @@ Window {
             border.color: "#ff7070"
             border.width: 1
 
-            // Button {
-            //     id: buttonAdd
-            //     width: parent.height
-            //     height: parent.height
-
-            //     text: "+"
-            //     onClicked: {
-            //         console.log(dataString)
-            //     }
-            // }
-            // Button {
-            //     id: buttonExl
-            //     width: parent.height
-            //     height: parent.height
-            //     anchors.left: buttonAdd.right
-            //     anchors.leftMargin: 5
-            //     text: "-"
-            //     onClicked: {
-            //         console.log(dataString)
-            //     }
-            // }
             Text {
                 id: totalAmountHrs
-                font.pixelSize: 22 //parent.width * 0.05 + parent.height * 0.1 // has to be adaptive
-                // horizontalAlignment: Text.AlignRight - 15
-                // verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 22
                 text: "0"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
@@ -1391,11 +1216,9 @@ Window {
 
             Text {
                 id: totalText
-                // width: parent.width
-                // height: parent.height
-                font.pixelSize: 18 //parent.width * 0.03 + parent.height * 0.075 // has to be adaptive
-                // horizontalAlignment: Text.AlignLeft + 15
-                // verticalAlignment: Text.AlignVCenter
+
+                font.pixelSize: 18
+
                 text: "Total:"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
@@ -1415,9 +1238,6 @@ Window {
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-        // onClosed: {
-        //     rowModel.clear()
-        // }
         /*-------------------- title -----------------------*/
         Rectangle {
             id: statTitle
@@ -1499,7 +1319,7 @@ Window {
                     Text {
                         id: text1
                         text: qsTr("Today")
-                        font.pixelSize: 14 //parent.height * 0.1 + parent.width * 0.1
+                        font.pixelSize: 14
                         anchors.verticalCenterOffset: -10
                         anchors.centerIn: parent
                         fontSizeMode: Text.HorizontalFit
@@ -1539,8 +1359,8 @@ Window {
 
                     Text {
                         id: text3
-                        text: qsTr("Max pr day")
-                        font.pixelSize: 14 //parent.width * 0.1 + parent.height * 0.1
+                        text: qsTr("Avg pr day")
+                        font.pixelSize: 14
                         anchors.centerIn: parent
                         anchors.verticalCenterOffset: -10
                         fontSizeMode: Text.HorizontalFit
@@ -1561,11 +1381,9 @@ Window {
                     id: statRec3
                     width: parent.width * 0.3
                     height: parent.height * 0.5
-                    //y: statRec2.height + 25
+
                     color: "#0a28ec"
                     radius: 5
-
-                    // anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
                     anchors.rightMargin: 0
                     gradient: Gradient {
@@ -1604,12 +1422,11 @@ Window {
                         fontSizeMode: Text.HorizontalFit
                         font.weight: Font.Normal
                     }
-                    //anchors.verticalCenter: parent.verticalCenter
                 }
             }
             ChartView {
                 id: chartBar
-                //title: "Line Chart"
+
                 antialiasing: true
                 legend.visible: false
                 anchors.left: parent.left
@@ -1620,8 +1437,6 @@ Window {
                 anchors.rightMargin: 0
                 anchors.topMargin: 0
                 anchors.bottomMargin: 0
-
-                //statContent.width * 0.67
                 BarSeries {
 
                     axisX: BarCategoryAxis {
@@ -1659,14 +1474,10 @@ Window {
             anchors.rightMargin: 0
             anchors.bottomMargin: 0
             width: parent.width
-
-            //Color: "green"
-            // x: 0
-            // y: statText.height + statContent.height + 5
             RoundButton {
                 id: xlsBut
 
-                width: window.isPortrait ? 85 : 100 //100 //statBottomLine.width * 0.25
+                width: window.isPortrait ? 85 : 100
                 height: window.isPortrait ? 35 : 45
                 radius: 5
 
@@ -1678,8 +1489,6 @@ Window {
                 onClicked: {
 
                     fileDialog.open()
-                    // mainwindow.writeToCSV(statBottomLine.cats,
-                    //                       statBottomLine.time, monthBut.text)
                 }
             }
             FileDialog {
@@ -1715,22 +1524,12 @@ Window {
                     statBottomLine.time.push(value.toFixed(2))
                     //console.log("Day", i + 1, ":", active_time[i], "hours")
                 }
-                // // Update chart directly
                 hoursSet.values = statBottomLine.time
                 mySeries.categories = statBottomLine.cats
                 var average = summ / active_time.length
-                console.log(average)
-                //hrsPrDay.text = average.toFixed(2)
+                console.log("average pr day ", average)
+                longestTime.text = average.toFixed(2)
                 tHrs.text = summ.toFixed(2)
-                if (statBottomLine.time.length !== 0) {
-                    var max = Math.max(...statBottomLine.time)
-                } else {
-                    longestTime.text = 0
-                }
-
-                console.log(max)
-                longestTime.text = max.toFixed(2)
-                //xlsBut.clicked(mainwindow.writeToCSV(cats, time))
             }
         }
     }

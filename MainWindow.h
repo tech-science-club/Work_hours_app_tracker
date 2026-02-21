@@ -18,9 +18,11 @@ class MainWindow : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString storagePath READ storagePath) //added from exmple
-    Q_PROPERTY(QString js_startBtn MEMBER js_startBtn)
-    Q_PROPERTY(QString js_pauseBtn MEMBER js_pauseBtn)
+    Q_PROPERTY(bool js_startBtn MEMBER js_startBtn)
+    Q_PROPERTY(bool js_pauseBtn MEMBER js_pauseBtn)
     Q_PROPERTY(QString js_startTime MEMBER js_startTime)
+    Q_PROPERTY(QString js_pauseTime MEMBER js_pauseTime)
+
     Q_PROPERTY(bool js_status MEMBER js_status)
 
     Q_PROPERTY(bool startButState MEMBER startButState)    ///!!!!
@@ -44,37 +46,36 @@ signals:
     void sendModifiedData(QString, QString);
     void sendHoursToTotalHrsInPopUp(QString);
     void sendArrayToChart(QVector<QString>, QVector<QString>);
-    void sendCounterToBtn(QString);
-    void sendCounterToPauseBtn(QString);
+    void sendCounterToBtn(QString, bool);
+    void sendCounterToPauseBtn(QString, bool);
 
 public slots:
-    void getCurrentDateTime();
-    QString console();
-    void writeDataTime(QString);
-    void endTime(QString);
+    void onStart();
+    void onPause();
+    void onEnd();
     QString calculatetime(QString);
     void depictDateData(QString);
     void overWrite(QString, QString);
     void monthInfo(QString);
     void writeToCSV(const QStringList&, const QStringList&, QString);
-    void timecounter();
+    void timecounterForStart();
     void onTimeout();
     void stopCounter();
     void timecounterForPause();
     void on_pTimeout();
     void stopPCounter();
     void exitSaveData();
-
     void saveAppStatus();
     void loadAppStatus();
-    void statusMonitor();
+
 
 private:
-    QString js_startBtn;
-    QString js_pauseBtn;
+    bool js_startBtn;
+    bool js_pauseBtn;
     QString js_startTime;
+    QString js_pauseTime;
     bool js_status;
-
+    QString jsonAppDataFile;
     QDateTime currentDatetime = QDateTime::currentDateTime();
     QTimer *timer = nullptr;
     QTimer *pause_timer = nullptr;
@@ -102,14 +103,20 @@ private:
     QString timeForPause;
     QString dateNameFile = QDateTime::currentDateTime().toString("dd_MMMM_yyyy");
     QString end_time;
-    bool startFlag = true;
-    bool* pauseFlag;
-    bool stopFlag;
+    QString startTimeStamp;
+    bool startFlag = false;
+    bool js_justStarted;
+    bool startedTimeFlag = false;
     QString jsonAppDataPath;
-    bool isRunning = false;
+    bool AppIsRunning = false;
+    bool startBtnState_pressed = false;
+    bool pauseBtnState_pressed = false;
+    bool endBtnState_pressed = false;
+
     bool startButState;
     bool pauseBtnState;
     bool endBtnState;
+
     void initializePath();
 };
 

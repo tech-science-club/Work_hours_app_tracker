@@ -9,26 +9,24 @@
 MainWindow::MainWindow(QObject *parent):QObject(parent) {
 
     initializePath();
-
     loadAppStatus();
-
 }
 
 void MainWindow::initializePath()
 {
-    // ✅ Get Android-appropriate storage location
+    // Android
 #ifdef Q_OS_ANDROID
-    // For Android: Internal app storage
-    // Path: /data/data/com.yourcompany.yourapp/files
+
     m_storagePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     csvPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);// + "/WorkTracker/csv/";
-    bufPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/WorkTracker/buffer/buffer.txt";
+    bufPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/buffer/buffer.txt";
+    jsonAppDataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/buffer/";
 #else
     // For Desktop: Documents folder
     m_storagePath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/WorkTracker/";
     csvPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/WorkTracker/csv/";
     bufPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/WorkTracker/buffer/buffer.txt";
-    jsonAppDataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/WorkTracker/buffer/appData.json";
+    jsonAppDataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/WorkTracker/";
 #endif
 
     // Create directory if it doesn't exist
@@ -43,22 +41,46 @@ void MainWindow::initializePath()
 
     qDebug() << "Storage path initialized:" << m_storagePath << '\n'<< csvPath <<'\n';
     //emit storagePathChanged();
+
+    if (!dir.exists(jsonAppDataPath)){
+        qDebug() << "path does not exist:" << jsonAppDataPath;
+        dir.mkpath(jsonAppDataPath);
+        return;
+    }
+    else{
+        qDebug() << "path to json dir :" << jsonAppDataPath;
+    }
+
+    //QString jsonFilePath = jsonAppDataPath + "appData.json";
+    jsonAppDataFile = QDir(jsonAppDataPath).filePath("appData.json");
+    qDebug() << "path to json file :" << jsonAppDataFile;
 }
 
-void MainWindow::getCurrentDateTime()
+void MainWindow::onStart()
     {
-    isRunning = true;
+    AppIsRunning = true;
+    startBtnState_pressed = true;
+    if (pauseBtnState_pressed){
+        pauseBtnState_pressed = false;
+    }
+
     startedtime = QDateTime::currentDateTime();
     startedTime  = QDateTime::currentDateTime().toString("HH:mm:ss");
+    if (startedTimeFlag == false){
+        startTimeStamp = startedTime;
+        startedTimeFlag = true;
+    }
+    timecounterForStart();
+    emit startButPressed(startTimeStamp);
 
-    timecounter();
-    emit startButPressed(startedTime);
-    qDebug()<<"startbtnstate "<< startButState<<'\n';
-
+    // qDebug()<<"startbtnstate "<< startBtnState_pressed<<'\n';
+    // qDebug()<<"pausetbtnstate "<< pauseBtnState_pressed<<'\n';
+    // qDebug()<<"endtbtnstate "<< endBtnState_pressed<<'\n';
     //startedTimeInfoPath = "C://Users//dimap//Documents//WH//user//" + dateNameFile + ".txt";
     startedTimeInfoPath = m_storagePath + "/" + dateNameFile + ".txt";
+
     QFile file(startedTimeInfoPath);
-    if (startFlag == true && js_status == false)
+    if (startFlag == true)
     {
         if(file.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text))
         {
@@ -66,12 +88,14 @@ void MainWindow::getCurrentDateTime()
             file.write("start "+ startedTime.toUtf8());
             file.write("\n");
             file.close();
-            startFlag = false;
+
         }
     }
+    startFlag = false;
+    saveAppStatus();
 }
 
-void MainWindow::timecounter(){
+void MainWindow::timecounterForStart(){
     if (!timer) {
         timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, &MainWindow::onTimeout);
@@ -88,10 +112,10 @@ void MainWindow::onTimeout()
     QDateTime nowdatetime = QDateTime::currentDateTime();
     diffSeconds = startedtime.secsTo(nowdatetime) + diff_sec;
     diffStr = QTime(0,0,0).addSecs(diffSeconds).toString("HH:mm:ss");
-    emit sendCounterToBtn(diffStr);
-    qDebug() << "diff_datetime: " << diffStr;
-   // }
-    saveAppStatus();
+    emit sendCounterToBtn(diffStr, startBtnState_pressed);
+    //qDebug() << "diff_datetime from cpp: " << diffStr;
+
+
 }
 
 void MainWindow::stopCounter()
@@ -100,7 +124,7 @@ void MainWindow::stopCounter()
     if (timer){
         timer->stop();
     }
-
+    qDebug()<<"start counter is stopped";
 }
 
 void MainWindow::timecounterForPause(){
@@ -119,7 +143,7 @@ void MainWindow::on_pTimeout()
     QDateTime nowdatetime = QDateTime::currentDateTime();
     qint64 diffSeconds = pause_Time.secsTo(nowdatetime) + pause_diffSeconds;
     diffStr_pause = QTime(0,0,0).addSecs(diffSeconds).toString("HH:mm:ss");
-    emit sendCounterToPauseBtn(diffStr_pause);
+    emit sendCounterToPauseBtn(diffStr_pause, pauseBtnState_pressed);
     saveAppStatus();
 }
 
@@ -129,21 +153,25 @@ void MainWindow::stopPCounter()
         pause_timer->stop();
     }
     pause_diffSeconds = 0;
+    qDebug()<<"pause counter is stopped";
 }
 
-QString MainWindow::console(){
-    return startedTime;
-    }
-
-void MainWindow::writeDataTime(QString timeForPause)
+void MainWindow::onPause()
     {
+    pauseBtnState_pressed = true;
+    startBtnState_pressed = false;
+
+    // qDebug()<<"startbtnstate "<< startBtnState_pressed<<'\n';
+    // qDebug()<<"pausetbtnstate "<< pauseBtnState_pressed<<'\n';
+    // qDebug()<<"endtbtnstate "<< endBtnState_pressed<<'\n';
+
     pauseTime           = QDateTime::currentDateTime().toString("HH:mm:ss");
     startedTimeInfoPath = m_storagePath + "/" + dateNameFile + ".txt";
     //startedTimeInfoPath = "C://Users//dimap//Documents//WH//user//"+dateNameFile+".txt";
     //bufPath             = "C://Users//dimap//Documents//WH//user//buff.txt";
     QFile file(startedTimeInfoPath);
     QFile fileBuf(bufPath);
-    qDebug()<<"from writeDataTime "<< startFlag;
+    qDebug()<<"from writeDataTime "<< pauseTime;
     if (startFlag == false)
     {
         if(file.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text))
@@ -154,23 +182,26 @@ void MainWindow::writeDataTime(QString timeForPause)
                 startFlag = true;
             }
     }
-    qDebug()<<"from writeDataTime "<< startFlag;
-    if(fileBuf.open(QIODevice::ReadWrite | QIODevice::Text))
-    {
-
-        fileBuf.write(timeForPause.toUtf8());
-
-        fileBuf.close();
-    }
+    //qDebug()<<"from writeDataTime "<< startFlag;
+    saveAppStatus();
     }
 
-void MainWindow::endTime(QString end_time)
+void MainWindow::onEnd()
     {
+        startBtnState_pressed = false;
+        pauseBtnState_pressed = false;
+        endBtnState_pressed   = true;
+        startedTimeFlag = false;
+        // qDebug()<<"startbtnstate "<< startBtnState_pressed<<'\n';
+        // qDebug()<<"pausetbtnstate "<< pauseBtnState_pressed<<'\n';
+        // qDebug()<<"endtbtnstate "<< endBtnState_pressed<<'\n';
+        end_time = QDateTime::currentDateTime().toString("HH:mm:ss");
         startedTimeInfoPath = m_storagePath + "/" + dateNameFile + ".txt";
         //startedTimeInfoPath = "C://Users//dimap//Documents//WH//user//"+dateNameFile+".txt";
         QFile file(startedTimeInfoPath);
         QFile fileBuf(bufPath);
         qDebug()<<end_time<<'\n';
+         qDebug()<<"start flag "<< startFlag<<'\n';
         if (startFlag == false)
         {
             if(file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
@@ -182,6 +213,8 @@ void MainWindow::endTime(QString end_time)
             }
         }
         diff_sec = 0;
+        AppIsRunning = false;
+        saveAppStatus();
         //qDebug()<<"diff sec "<< diff_sec<<'\n';
     }
 
@@ -253,22 +286,22 @@ QString MainWindow::calculatetime(QString dateNameFile){
                             .arg(min, 2, 10, QChar('0'))
                             .arg(sec, 2, 10, QChar('0'));
 
-    qDebug() << "Total active time:" << totalActiveSec << "seconds"<<'\n';
-    qDebug() << "Total time:" << totalTime << "\n";
+    // qDebug() << "Total active time:" << totalActiveSec << "seconds"<<'\n';
+    // qDebug() << "Total time:" << totalTime << "\n";
 
     emit totalTimeShow(totalTime);
     return QString::number(totalActiveSec);
     }
 
 void MainWindow::depictDateData(QString date){
-    qDebug()<< "date from button "<< date <<'\n';
+    //qDebug()<< "date from button "<< date <<'\n';
     QString name;
     QString cleaned = date;
     QString FileName;
     cleaned.replace(',', ' ');
     QStringList parts = cleaned.split(' ', Qt::SkipEmptyParts);
     int ln = parts[1].length();
-    qDebug()<<"lenth of date: "<< ln <<'\n';
+    //qDebug()<<"lenth of date: "<< ln <<'\n';
 
     if (ln<2){
         FileName = "0"+parts[1]+"_"+parts[2]+"_"+parts[3];
@@ -278,13 +311,13 @@ void MainWindow::depictDateData(QString date){
     }
 
     QString fileInfoPath = m_storagePath + "/" + FileName+".txt";
-    qDebug()<<fileInfoPath;
+    //qDebug()<<fileInfoPath;
     QFile file(fileInfoPath);
     QTextStream in(&file);
     emit sendDateHeader(FileName);
     int linecnt = 0;
     QString total_time = calculatetime(FileName);
-    qDebug()<<"from depictDateData "<<total_time;
+    //qDebug()<<"from depictDateData "<<total_time;
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         while (!in.atEnd())
@@ -299,7 +332,7 @@ void MainWindow::depictDateData(QString date){
 }
 
 void MainWindow::overWrite(QString data, QString date){
-    qDebug()<<"cpp side: "<< data<<" "<<date<<'\n';
+    //qDebug()<<"cpp side: "<< data<<" "<<date<<'\n';
     QString name;
     QString cleaned = data;
     cleaned.replace(',', ' ');
@@ -307,7 +340,7 @@ void MainWindow::overWrite(QString data, QString date){
     QString FileName = date;
     date.replace(' ', '_');
     QString fileInfoPath = m_storagePath + "/" +date+".txt";
-    qDebug()<<fileInfoPath;
+    //qDebug()<<fileInfoPath;
     QFile file(fileInfoPath);
 
     if(file.open(QIODevice::WriteOnly |  QIODevice::Text))
@@ -321,7 +354,7 @@ void MainWindow::overWrite(QString data, QString date){
     }
     //MainWindow mv;
     QString hours = calculatetime(date);
-    qDebug()<< "hours from overwrite "<<hours<<'\n';
+    //qDebug()<< "hours from overwrite "<<hours<<'\n';
     emit sendHoursToTotalHrsInPopUp(hours);
 }
 
@@ -352,7 +385,7 @@ void MainWindow::monthInfo(QString month){
                 active_time.push_back(sec_amount);
                 day.push_back(parts[0]);
             }
-            qDebug() << active_time << '\n';
+            //qDebug() << active_time << '\n';
         } else {
             qDebug() << "File doesn't have enough parts:" << fileName;
         }
@@ -393,6 +426,7 @@ void MainWindow::writeToCSV(const QStringList &days, const QStringList &hrs, QSt
     }
 
     file.close();
+
 #else
     QDir dir(csvPath);
     if (!dir.exists()) {
@@ -410,7 +444,7 @@ void MainWindow::writeToCSV(const QStringList &days, const QStringList &hrs, QSt
         qWarning() << "Cannot open file:" << csvPath;
         return;
     }
-    qDebug()<<"name "<<name<<'\n';
+    //qDebug()<<"name "<<name<<'\n';
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
     int n = days.size();
@@ -423,24 +457,24 @@ void MainWindow::writeToCSV(const QStringList &days, const QStringList &hrs, QSt
 }
 
 void MainWindow::exitSaveData(){
-    QFile file(jsonAppDataPath);
-    isRunning = false;
+    QFile file(jsonAppDataFile);
+    AppIsRunning = false;
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Failed to open state file for writing:" << file.errorString();
-
     }
     QJsonObject jsobj;
-    jsobj["startBtn"] = "Start";
-    jsobj["pauseBtn"] = "Pause";
+    jsobj["startBtn"] = false;
+    jsobj["pauseBtn"] = false;
     jsobj["startTime"] = "HH:MM:SS";
-    jsobj["appStatus"] = isRunning;
+    jsobj["pauseTime"] = "HH:MM:SS";
+    jsobj["appStatus"] = false;
 
     QByteArray byteArray;
     byteArray = QJsonDocument(jsobj).toJson();
     file.write(byteArray);
     file.close();
     QTextStream textStream(stdout);
-    textStream << "Rendered json byteArray text: " <<'\n';
-    textStream << byteArray << '\n';
-    loadAppStatus();
+    // textStream << "Rendered json byteArray text: " <<'\n';
+    // textStream << byteArray << '\n';
+
 }
