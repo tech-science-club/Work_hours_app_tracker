@@ -45,7 +45,10 @@ void MainWindow::initializePath()
     if (!dir.exists(jsonAppDataPath)){
         qDebug() << "path does not exist:" << jsonAppDataPath;
         dir.mkpath(jsonAppDataPath);
-        return;
+        if (dir.exists(jsonAppDataPath)){
+            qDebug() << "path is created:" << jsonAppDataPath;
+        //return;
+        }
     }
     else{
         qDebug() << "path to json dir :" << jsonAppDataPath;
@@ -278,7 +281,7 @@ QString MainWindow::calculatetime(QString dateNameFile){
     }
 
     int hours = totalActiveSec / 3600;
-    QString hours_formated = QString::number(hours, 'f', 2);
+
     int min = (totalActiveSec % 3600) / 60;
     int sec = totalActiveSec % 60;
     totalTime = QString("%1:%2:%3")
@@ -295,7 +298,7 @@ QString MainWindow::calculatetime(QString dateNameFile){
 
 void MainWindow::depictDateData(QString date){
     //qDebug()<< "date from button "<< date <<'\n';
-    QString name;
+
     QString cleaned = date;
     QString FileName;
     cleaned.replace(',', ' ');
@@ -333,11 +336,11 @@ void MainWindow::depictDateData(QString date){
 
 void MainWindow::overWrite(QString data, QString date){
     //qDebug()<<"cpp side: "<< data<<" "<<date<<'\n';
-    QString name;
+
     QString cleaned = data;
     cleaned.replace(',', ' ');
     QStringList parts = cleaned.split('\n', Qt::SkipEmptyParts);
-    QString FileName = date;
+
     date.replace(' ', '_');
     QString fileInfoPath = m_storagePath + "/" +date+".txt";
     //qDebug()<<fileInfoPath;
@@ -373,7 +376,8 @@ void MainWindow::monthInfo(QString month){
 
     //QStringList fileNames = directory.entryList(QDir::Files);
     //QString month_format = month.replace(' ', '_');
-    for (const QString &fileName : directory.entryList(QDir::Files)) {
+    const QStringList files = directory.entryList(QDir::Files);
+    for (const QString &fileName : files) {
         parts = fileName.split("_",  Qt::SkipEmptyParts);
         parts_txt_off = fileName.split(".",  Qt::SkipEmptyParts);
         parts1 = month.split(" ",  Qt::SkipEmptyParts);

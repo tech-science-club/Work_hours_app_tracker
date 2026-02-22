@@ -46,6 +46,7 @@ qt_add_qml_module(appWH
             images/bin.png
             images/add.png
 
+            resources.qrc
             rsc/bkgr.png
             rsc/play.png
             rsc/square.png
@@ -54,10 +55,14 @@ qt_add_qml_module(appWH
             rsc/exit.png
             rsc/options.png
             rsc/done.png
-
-            rsc/intropic.png rsc/logo.png
+            rsc/intropic.png
+            rsc/logo.png
             rsc/intropic.png
             rsc/bkgr.jpg
+            rsc/button.png
+            rsc/no.png
+            rsc/switch.png
+            rsc/background.jpg
 
             android/gradle/wrapper/gradle-wrapper.jar
             android/gradle/wrapper/gradle-wrapper.properties
@@ -68,11 +73,11 @@ qt_add_qml_module(appWH
             android/gradle.properties
             android/gradlew
             android/gradlew.bat
-            android/res/drawable/intropic.png  android/res/drawable/splash.xml
+            android/res/drawable/intropic.png
+            android/res/drawable/splash.xml
             android/res/values/apptheme.xml
-            rsc/logo.png
             android/res/drawable/logo.png
-            resources.qrc
+
 
             fonts/Candara.ttf
             fonts/Square721_BT.ttf
@@ -89,10 +94,9 @@ qt_add_qml_module(appWH
             android/assets/fonts/Square721BTBold.ttf
             android/assets/fonts/Square721BTItalicV2.ttf
             android/assets/fonts/Square721BTRoman.ttf
-            rsc/button.png rsc/no.png rsc/switch.png
-            rsc/background.jpg
+
         )
-    qt_add_resources(appWH
+qt_add_resources(appWH
         PREFIX "/"
         FILES
             fonts/Candara.ttf
@@ -100,7 +104,7 @@ qt_add_qml_module(appWH
             fonts/Square721BTBold.ttf
             fonts/Square721BTItalicV2.ttf
             fonts/Square721BTRoman.ttf
-    )
+)
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.

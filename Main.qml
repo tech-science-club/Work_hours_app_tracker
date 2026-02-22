@@ -1328,7 +1328,7 @@ Window {
 
                     Text {
                         id: hrsPrDay
-                        text: qsTr("HOURS")
+                        text: qsTr("---")
                         anchors.top: text1.bottom
                         anchors.topMargin: 0
                         font.pixelSize: 12

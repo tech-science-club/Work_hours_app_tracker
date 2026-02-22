@@ -17,7 +17,7 @@ class MainWindow : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(QString storagePath READ storagePath) //added from exmple
+    Q_PROPERTY(QString storagePath READ storagePath CONSTANT) //added from exmple
     Q_PROPERTY(bool js_startBtn MEMBER js_startBtn)
     Q_PROPERTY(bool js_pauseBtn MEMBER js_pauseBtn)
     Q_PROPERTY(QString js_startTime MEMBER js_startTime)
