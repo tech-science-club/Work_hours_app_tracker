@@ -10,6 +10,8 @@ during whole month depicting bar chart.
 Information is being saved for each day and there is a posibilty to save txt file on the disc
 with information in [day, hours] view.
 
+Available only for Android on arm v7 and v8
+
 https://github.com/user-attachments/assets/2e11c7cb-534b-4582-bdd0-d01c2ee56d03
 
 https://github.com/user-attachments/assets/9a6510ef-d81f-4a85-8180-056c52a05914
