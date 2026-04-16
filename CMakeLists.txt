@@ -95,6 +95,10 @@ qt_add_qml_module(appWH
             android/assets/fonts/Square721BTItalicV2.ttf
             android/assets/fonts/Square721BTRoman.ttf
             RESOURCES Readme.md
+            RESOURCES rsc/option.png
+            RESOURCES rsc/config.png
+            RESOURCES rsc/config.png
+            RESOURCES rsc/left.png rsc/right.png
 
         )
 qt_add_resources(appWH

@@ -18,11 +18,12 @@ class MainWindow : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString storagePath READ storagePath CONSTANT) //added from exmple
+    Q_PROPERTY(QString imgPath READ imgPath CONSTANT)
     Q_PROPERTY(bool js_startBtn MEMBER js_startBtn)
     Q_PROPERTY(bool js_pauseBtn MEMBER js_pauseBtn)
     Q_PROPERTY(QString js_startTime MEMBER js_startTime)
     Q_PROPERTY(QString js_pauseTime MEMBER js_pauseTime)
-
+    Q_PROPERTY(QString js_started MEMBER js_started)
     Q_PROPERTY(bool js_status MEMBER js_status)
 
     Q_PROPERTY(bool startButState MEMBER startButState)    ///!!!!
@@ -32,6 +33,8 @@ public:
     explicit MainWindow(QObject *parent = nullptr);
     //from example bellow
     QString storagePath() const { return m_storagePath; }
+    QString imgPath() const { return ImgPath; }
+
     // Q_INVOKABLE bool saveData(const QString &filename, const QString &data);
     // Q_INVOKABLE QString loadData(const QString &filename);
     // Q_INVOKABLE QStringList listFiles();
@@ -48,6 +51,7 @@ signals:
     void sendArrayToChart(QVector<QString>, QVector<QString>);
     void sendCounterToBtn(QString, bool);
     void sendCounterToPauseBtn(QString, bool);
+    void saveImg();
 
 public slots:
     void onStart();
@@ -67,6 +71,7 @@ public slots:
     void exitSaveData();
     void saveAppStatus();
     void loadAppStatus();
+    //void saveChartImage(const QString& uri, QObject* result);
 
 
 private:
@@ -74,7 +79,8 @@ private:
     bool js_pauseBtn;
     QString js_startTime;
     QString js_pauseTime;
-    bool js_status;
+    QString js_started;
+    bool js_status = false;
     QString jsonAppDataFile;
     QDateTime currentDatetime = QDateTime::currentDateTime();
     QTimer *timer = nullptr;
@@ -86,6 +92,7 @@ private:
     qint64 pause_diffSeconds = 0;
     qint64 PdiffSeconds = 0;
     QString csvPath;
+    QString ImgPath;
     QString cntr;
     QString diffStr = " ";
     QString diffStr_pause = " ";

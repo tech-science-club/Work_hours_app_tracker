@@ -5,19 +5,26 @@ import QtCharts 2.10
 import QtQuick.Controls.Material
 import Qt5Compat.GraphicalEffects
 import QtQuick.Dialogs
+import QtCore
 
 Window {
     id: window
-    width: isMobile ? Screen.width : 480
-    height: isMobile ? Screen.height : 1024
+
     visible: true
     color: "#ffffff"
+    property alias mainbox: mainbox
     flags: Qt.Window
     readonly property bool isMobile: Qt.platform.os === "android"
                                      || Qt.platform.os === "ios"
 
-    property bool isPortrait: width < height
-    property bool isLandscape: width > height
+    // width: isMobile ? Screen.width : 368 //Screen.width : 368
+    // height: isMobile ? Screen.height : 768
+    // property bool isPortrait: width < window.height
+    // property bool isLandscape: width > window.height
+    width: isMobile ? Screen.desktopAvailableWidth : 368
+    height: isMobile ? Screen.desktopAvailableHeight : 768
+    readonly property bool isPortrait: Screen.height >= Screen.width
+    readonly property bool isLandscape: Screen.width > Screen.height
 
     BorderImage {
         id: borderImage
@@ -28,12 +35,13 @@ Window {
         clip: true
 
         Text {
+
             id: currentDate
             x: 0
-            y: 15
+            y: 12
             width: parent.width
             height: parent.height * 0.05
-            color: "#6c0052"
+            color: "#8900d6"
             font.pointSize: parent.height * 0.015 + parent.width * 0.03
             horizontalAlignment: Text.AlignHCenter
             text: dateText.text
@@ -73,20 +81,27 @@ Window {
                 }
                 PropertyChanges {
                     target: chartBar
-                    x: 0
-                    y: statTitle.height + gridBox.height + 10
                     width: statContent.width
                     height: statContent.height * 0.68
+                    anchors.fill: undefined
+                    anchors.left: statContent.left // replaces x: 0
+                    anchors.top: gridBox.bottom // replaces y: 0
+                    anchors.bottom: statContent.bottom
+                    anchors.right: undefined
                 }
-
                 PropertyChanges {
                     target: gridBox
-                    x: 0
-                    y: statTitle.height + 5
                     width: statContent.width
                     height: statContent.height * 0.1
+                    anchors.top: statContent.top // replaces y: 0
                 }
-
+                PropertyChanges {
+                    target: statTitle
+                    width: parent.width
+                    height: parent.height * 0.05
+                    x: 0
+                    y: 0
+                }
                 PropertyChanges {
                     target: statRec1
                     anchors.verticalCenter: parent.verticalCenter
@@ -99,7 +114,6 @@ Window {
                     width: parent.width * 0.3
                     height: parent.height * 0.75
                 }
-
                 PropertyChanges {
                     target: statRec2
                     anchors.centerIn: parent
@@ -110,7 +124,6 @@ Window {
                     width: parent.width * 0.3
                     height: parent.height * 0.75
                 }
-
                 PropertyChanges {
                     target: statRec3
                     anchors.verticalCenter: parent.verticalCenter
@@ -123,6 +136,27 @@ Window {
                     width: parent.width * 0.3
                     height: parent.height * 0.75
                 }
+                PropertyChanges {
+                    target: currentDate
+
+                    //width: rectangle3.width
+                    //height: rectangle3.height * 0.25
+                    font.pixelSize: mainbox.height * 0.05 + mainbox.width * 0.05
+                }
+                AnchorChanges {
+                    target: exitButton
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: undefined
+                }
+                PropertyChanges {
+                    target: exitButton
+                    radius: 5
+                    anchors.rightMargin: 10
+                    anchors.bottomMargin: 10
+                    width: 50 //parent.width * 0.07
+                    height: 30 //parent.width * 0.07
+                }
             },
             State {
                 name: "hor"
@@ -132,7 +166,7 @@ Window {
                     target: calendarbox
                     x: parent.width * 0.5
                     y: currentDate.height + 5
-                    width: parent.width * 0.5
+                    width: parent.width * 0.45
                     height: parent.height * 0.8
                     anchors.bottom: parent.bottom
                     anchors.top: parent.top
@@ -152,26 +186,29 @@ Window {
                     anchors.bottomMargin: 10
                     anchors.topMargin: parent.height * 0.1
                 }
-
                 PropertyChanges {
                     target: chartBar
-                    x: 0
-                    y: 0
                     width: statContent.width * 0.8
                     height: statContent.height
                     anchors.fill: undefined
                     anchors.left: undefined
                     anchors.right: undefined
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    anchors.top: statContent.top
+                    anchors.topMargin: -10
+                    anchors.bottom: statContent.bottom
                 }
-
                 PropertyChanges {
                     target: gridBox
-                    x: chartBar.width + 5
+                    x: chartBar.width + 1
                     y: 0
                     width: statContent.width * 0.2
                     height: statContent.height
+                }
+                PropertyChanges {
+                    target: statTitle
+                    y: -5
+                    width: parent.width
+                    height: parent.height * 0.1
                 }
 
                 PropertyChanges {
@@ -187,7 +224,6 @@ Window {
                     width: gridBox.width
                     height: gridBox.height * 0.25
                 }
-
                 PropertyChanges {
                     target: statRec2
                     anchors.top: statRec1.bottom
@@ -201,7 +237,6 @@ Window {
                     width: gridBox.width
                     height: gridBox.height * 0.25
                 }
-
                 PropertyChanges {
                     target: statRec3
                     anchors.top: statRec2.bottom
@@ -215,11 +250,46 @@ Window {
                     width: gridBox.width
                     height: gridBox.height * 0.25
                 }
+                PropertyChanges {
+                    target: summaryTime
+                    width: rectangle3.width
+                    height: rectangle3.heigh
+                    font.pixelSize: mainbox.height * 0.05 + mainbox.width * 0.1
+                }
+                PropertyChanges {
+                    target: currentDate
+                    x: 0
+                    y: -5
+                    font.pixelSize: mainbox.height * 0.05 + mainbox.width * 0.05
+                }
+                AnchorChanges {
+                    target: exitButton
+                    anchors.right: undefined
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                PropertyChanges {
+                    target: exitButton
+                    radius: 5
+
+                    // anchors.left: undefined
+                    // anchors.top: undefined
+                    // anchors.centerIn: undefined
+                    // anchors.right: undefined
+                    // anchors.horizontalCenter: window.horizontalCenter
+                    //anchors.bottom: window.bottom
+                    anchors.bottomMargin: 5
+                    // x: (window.x - exitButton.width)
+                    // y: 0
+                    width: 50 //parent.width * 0.07
+                    height: 30 //parent.width * 0.07
+                }
             }
         ]
     }
 
     Rectangle {
+
         id: mainbox
         width: parent.width
         height: parent.height * 0.45
@@ -410,7 +480,6 @@ Window {
                 }
                 orientation: Gradient.Vertical
             }
-
             anchors.verticalCenterOffset: -25
             anchors.centerIn: parent
 
@@ -516,6 +585,7 @@ Window {
                         }
                         startButton.startButIsPressed = true
                     }
+                    //startingTime.text = mainwindow.js_started
                 }
 
                 onClicked: startClick()
@@ -605,7 +675,6 @@ Window {
             }
         }
     }
-
     Rectangle {
         id: calendarbox
         height: parent.height * 0.40
@@ -653,12 +722,35 @@ Window {
 
                     Button {
                         id: toLeft
-                        text: "◀"
+
                         flat: true
-                        Layout.leftMargin: 5
-                        Layout.fillHeight: true
+                        // Layout.leftMargin: 5
+                        // Layout.fillHeight: true
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 5
                         height: rectangle.height * 0.8
                         //y: (rectangle.height - toLeft.height) / 2
+                        background: Rectangle {
+                            color: "transparent"
+                            border.color: "transparent"
+                        }
+                        contentItem: Item {
+                            id: item4
+                            anchors.fill: parent
+
+                            Image {
+                                id: options
+                                anchors.fill: parent
+                                anchors.leftMargin: 1
+                                anchors.rightMargin: 1
+                                anchors.topMargin: 1
+                                anchors.bottomMargin: 1
+                                source: "rsc/left.png"
+
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
                         onClicked: {
                             if (monthGrid.month === 0) {
                                 monthGrid.month = 11
@@ -677,9 +769,11 @@ Window {
                         font.pixelSize: parent.width * 0.03 + parent.height * 0.075
                         highlighted: false
                         flat: true
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        // Layout.fillHeight: true
+                        // Layout.fillWidth: true
+                        // Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
                         font.bold: true
                         width: parent.width * 0.9
                         height: parent.height
@@ -691,13 +785,30 @@ Window {
 
                     Button {
                         id: toRight
-                        text: "▶"
                         flat: true
-                        Layout.fillHeight: true
-                        Layout.rightMargin: 5
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: 5
                         height: rectangle.height * 0.8
+                        background: Item {}
+                        contentItem: Item {
+                            //id: item4
+                            anchors.fill: parent
+
+                            Image {
+                                //id: options
+                                anchors.fill: parent
+                                anchors.leftMargin: 1
+                                anchors.rightMargin: 1
+                                anchors.topMargin: 1
+                                anchors.bottomMargin: 1
+                                source: "rsc/right.png"
+
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
                         onClicked: {
+                            color: "gray"
                             if (monthGrid.month === 11) {
                                 monthGrid.month = 0
                                 monthGrid.year++
@@ -801,8 +912,21 @@ Window {
             RoundButton {
                 id: getDateData
                 width: parent.width
-                height: parent.height
+                //height: parent.height * 0.5
                 Layout.fillWidth: true
+                Layout.preferredHeight: window.isLandscape ? parent.height
+                                                             * 0.15 : parent.height * 0.15
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 4
+                    radius: 8.0
+                    samples: 17
+                    color: "#80000000" // Semi-transparent black
+                    transparentBorder: true
+                }
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
                 radius: 10
                 text: ""
                 onClicked: {
@@ -825,7 +949,6 @@ Window {
             }
         }
     }
-
     Timer {
         id: countTimer
         interval: 1000
@@ -836,7 +959,6 @@ Window {
             mainwindow.colectAppData(startButton.text, breakButton.text)
         }
     }
-
     Timer {
         id: breakTimer
         interval: 1000
@@ -853,6 +975,7 @@ Window {
     /*----------------- sumary time on the screen ----------------*/
     Connections {
         target: mainwindow
+
         onSendCounterToBtn: function (cntr, isPressed) {
             startButton.startClick()
             startButton.text = cntr
@@ -870,9 +993,9 @@ Window {
 
             }
         }
-        onStartButPressed: function (startedTime) {
-            console.log(startedTime)
-            startingTime.text = startedTime
+        onStartButPressed: function (Time) {
+            console.log(Time)
+            startingTime.text = Time //mainwindow.js_startTime
         }
         onTotalTimeShow: function (totalTime) {
             summaryTime.text = totalTime
@@ -907,27 +1030,27 @@ Window {
 
     RoundButton {
         id: exitButton
-        radius: 100
-        text: " "
+        radius: 10
+
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.rightMargin: 10
         anchors.bottomMargin: 10
-        width: parent.width * 0.07
-        height: parent.width * 0.07
-        Image {
-            id: exit
-            visible: true
-            anchors.fill: parent
-            source: "rsc/no.png"
-            fillMode: Image.PreserveAspectFit
-        }
+        //width: parent.width * 0.07
+        //height: parent.height * 0.07
+        text: "Exit"
+        // Image {
+        //     id: exit
+        //     visible: true
+        //     anchors.fill: parent
+        //     source: "rsc/no.png"
+        //     fillMode: Image.PreserveAspectFit
+        // }
         onClicked: {
             mainwindow.exitSaveData()
             Qt.quit()
         }
     }
-
     Popup {
         id: popup
         parent: Overlay.overlay
@@ -935,6 +1058,8 @@ Window {
         y: Math.round((parent.height - height) / 3)
         width: parent.width - 50
         height: parent.height * 0.85
+        //visible: true //Qt.application.arguments.indexOf("--design") !== -1
+        clip: false
         modal: true
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
@@ -942,13 +1067,17 @@ Window {
         onClosed: {
             rowModel.clear()
             totalAmountHrs.text = "0"
+            addNewLineInPopup.visible = true
+            rectangle2.cnt = 1
+            saveDelLines.visible = false
         }
         /*-------------------- title -----------------------*/
         Rectangle {
+
             id: labelText
             width: parent.width
             height: parent.height * 0.1
-
+            opacity: 0.7
             color: "#ffffff"
             radius: 5
             gradient: Gradient {
@@ -964,6 +1093,15 @@ Window {
                 orientation: Gradient.Vertical
             }
             Text {
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 2
+                    radius: 5.0
+                    samples: 17
+                    color: "#80000000"
+                    transparentBorder: true
+                }
                 id: datetext
                 width: parent.width
                 height: parent.height
@@ -981,7 +1119,31 @@ Window {
             x: 0
             y: parent.height * 0.1
 
-            //color: "#11b90f"
+            //color: "#88baff"
+            property int cnt: 1
+
+            function addLine() {
+                rowModel.append({
+                                    "digit": rectangle2.cnt,
+                                    "text1": " edit ",
+                                    "text2": " 00:00:00"
+                                })
+                rectangle2.cnt += 1
+                console.log("param1, cnt, total_time")
+            }
+            function delLine(index) {
+                rowModel.remove(index)
+                rectangle2.cnt -= 1
+                console.log("param1, cnt, total_time")
+                for (var i = 0; i < rowModel.count; i++) {
+                    rowModel.setProperty(i, "digit", i + 1)
+                }
+                if (rowModel.count === 0) {
+                    saveDelLines.visible = true
+                }
+                console.log("row count ", rowModel.count)
+            }
+
             Connections {
                 target: mainwindow
                 onSendDateHeader: function (name) {
@@ -993,6 +1155,11 @@ Window {
                 }
 
                 onSendDataToPopup: function (param1, cnt, total_time) {
+                    console.log("data from file: ", param1, cnt, total_time)
+                    if (param1 && cnt && total_time) {
+                        addNewLineInPopup.visible = false // ✅ show button when all are empty/null
+                    }
+
                     var items = param1.split(" ")
                     var tt = parseFloat(total_time / 3600)
                     var tt_rounded = tt.toFixed(2)
@@ -1015,6 +1182,69 @@ Window {
             ListModel {
                 id: rowModel
             }
+            Button {
+                /* add new line in the case od absence of data*/
+                id: addNewLineInPopup
+                width: 25
+                height: 25
+                z: 10
+                visible: true
+                property bool toggle: false
+                Text {
+                    id: popUpBtnText
+                    width: parent.width
+                    height: parent.height
+                    font.pixelSize: 24 //parent.width * 0.03 + parent.height * 0.075
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    text: "+"
+                }
+                anchors.top: rectangle2.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    //getData("edit line", 1, "00:00:00")
+                    rowModel.append({
+                                        "digit": rectangle2.cnt,
+                                        "text1": " edit ",
+                                        "text2": " 00:00:00"
+                                    })
+                    rectangle2.cnt += 1
+                    console.log("param1, cnt, total_time")
+                    addNewLineInPopup.visible = false
+                }
+            }
+
+            Button {
+                /* del last line in the case od absence of data*/
+                id: saveDelLines
+                width: 40
+                height: 25
+                z: 10
+                visible: false
+                property bool toggle: false
+                Text {
+
+                    width: parent.width
+                    height: parent.height
+                    font.pixelSize: 14 //parent.width * 0.03 + parent.height * 0.075
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    text: "Save"
+                }
+                anchors.top: rectangle2.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    //getData("edit line", 1, "00:00:00")
+                    var dataString = ""
+                    mainwindow.overWrite(dataString, datetext.text)
+                }
+            }
+
+            Image {
+                anchors.fill: parent
+                source: "rsc/bkgr.jpg"
+                fillMode: Image.PreserveAspectCrop
+            }
             ScrollView {
                 id: scrollView
                 anchors.fill: parent
@@ -1035,46 +1265,80 @@ Window {
 
                             width: parent.width
                             height: 42
-                            color: index % 2 === 0 ? "#f5f5f5" : "white"
-                            border.color: "#ddd"
+                            //color: index % 2 === 0 ? "#f5f5f5" : "white"
+                            //border.color: "#ddd"
                             Row {
                                 id: row3
+                                spacing: 2
                                 Rectangle {
                                     width: gridPopup.width * 0.1
                                     height: 40
+                                    radius: 5
                                     color: "lightblue"
-
+                                    layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        horizontalOffset: 0
+                                        verticalOffset: 4
+                                        radius: 8.0
+                                        samples: 17
+                                        color: "#80000000" // Semi-transparent black
+                                        transparentBorder: true
+                                    }
                                     Text {
                                         anchors.centerIn: parent
                                         text: model.digit
                                         font.bold: true
                                     }
                                 }
-                                Rectangle {
-                                    width: gridPopup.width * 0.3
-                                    height: 40
-                                    color: "lightgreen"
 
-                                    Text {
+                                Rectangle {
+                                    width: gridPopup.width * 0.35
+                                    height: 40
+                                    radius: 5
+                                    color: "lightgreen"
+                                    layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        horizontalOffset: 0
+                                        verticalOffset: 4
+                                        radius: 8.0
+                                        samples: 17
+                                        color: "#80000000" // Semi-transparent black
+                                        transparentBorder: true
+                                    }
+                                    TextEdit {
+                                        id: textEditTypeOfEvent
                                         anchors.centerIn: parent
                                         text: model.text1
+                                        property bool isUpdating: false
+
+                                        onActiveFocusChanged: {
+                                            if (activeFocus) {
+                                                selectAll()
+                                            }
+                                        }
+
+                                        onTextChanged: {
+                                            rowModel.setProperty(
+                                                        index, "text1",
+                                                        text) // ✅ saves on every keystroke
+                                        }
                                     }
                                 }
                                 Rectangle {
-                                    width: gridPopup.width * 0.4
+                                    width: gridPopup.width * 0.45
                                     height: 40
                                     color: "lightyellow"
-                                    Image {
-                                        id: edit
-                                        width: 20 //parent.width * 0.2
-                                        height: 20 //parent.width * 0.2
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 1
-
-                                        source: "rsc/edit.png"
-                                        fillMode: Image.PreserveAspectFit
+                                    radius: 5
+                                    layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        horizontalOffset: 0
+                                        verticalOffset: 4
+                                        radius: 8.0
+                                        samples: 17
+                                        color: "#80000000" // Semi-transparent black
+                                        transparentBorder: true
                                     }
+
                                     TextEdit {
                                         id: textEditField
                                         anchors.centerIn: parent
@@ -1141,52 +1405,147 @@ Window {
                                 }
                                 Rectangle {
                                     id: rectangle1
-                                    width: gridPopup.width * 0.2
+                                    width: gridPopup.width * 0.075
                                     height: 40
-                                    color: "lightyellow"
-                                    RoundButton {
-                                        width: 35
-                                        height: 35
-                                        radius: 15
+                                    radius: 5
+                                    //color: "lightyellow"
+                                    layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        horizontalOffset: 0
+                                        verticalOffset: 4
+                                        radius: 8.0
+                                        samples: 17
+                                        color: "#80000000" // Semi-transparent black
+                                        transparentBorder: true
+                                    }
+                                    Button {
+                                        width: 30
+                                        height: 30
                                         text: " "
                                         anchors.verticalCenter: parent.verticalCenter
-                                        anchors.right: parent.right
-                                        anchors.rightMargin: 0
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        //anchors.right: parent.right
+                                        //anchors.rightMargin: 25
+                                        //background: Item {}
+                                        background: Rectangle {
+                                            color: "transparent"
+                                            border.color: "transparent"
+                                        }
                                         contentItem: Item {
-                                            id: item3
+                                            //id: item4
                                             anchors.fill: parent
 
                                             Image {
-                                                id: submit
+                                                //id: options
                                                 anchors.fill: parent
                                                 anchors.leftMargin: 1
                                                 anchors.rightMargin: 1
                                                 anchors.topMargin: 1
                                                 anchors.bottomMargin: 1
-                                                source: "rsc/done.png"
+                                                source: "rsc/config.png"
 
                                                 fillMode: Image.PreserveAspectFit
                                             }
                                         }
-
-                                        background: Rectangle {
-                                            color: parent.down ? "#999999" : "#00000000"
-                                            //color:
-                                            radius: parent.radius
-                                        }
                                         onClicked: {
-                                            var dataString = ""
-                                            for (var i = 0; i < rowModel.count; i++) {
-                                                var item = rowModel.get(i)
-                                                dataString += item.text1 + "," + item.text2 + "\n"
-                                            }
-                                            console.log(dataString)
-                                            mainwindow.overWrite(dataString,
-                                                                 datetext.text)
+                                            menu.open()
                                         }
                                     }
+                                    Menu {
+                                        id: menu
+                                        x: -10
+                                        y: (item4.height - height) / 2
+                                        width: 80
+
+                                        height: 150
+                                        MenuItem {
+                                            text: "add line"
+                                            onClicked: {
+                                                rectangle2.addLine()
+                                            }
+                                        }
+                                        MenuItem {
+                                            text: "del line"
+                                            onClicked: {
+                                                rectangle2.delLine(index)
+                                            }
+                                        }
+                                        MenuItem {
+                                            text: "Save"
+                                            onClicked: {
+                                                var dataString = ""
+                                                for (var i = 0; i < rowModel.count; i++) {
+                                                    var item = rowModel.get(i)
+                                                    dataString += item.text1 + ","
+                                                            + item.text2 + "\n"
+                                                }
+                                                console.log(dataString)
+                                                mainwindow.overWrite(
+                                                            dataString,
+                                                            datetext.text)
+                                            }
+                                        }
+                                    }
+                                    // RoundButton {
+                                    //     width: 35
+                                    //     height: 35
+                                    //     radius: 15
+                                    //     text: " "
+                                    //     anchors.verticalCenter: parent.verticalCenter
+                                    //     anchors.right: parent.right
+                                    //     anchors.rightMargin: 0
+                                    //     contentItem: Item {
+                                    //         id: item3
+                                    //         anchors.fill: parent
+
+                                    //         Image {
+                                    //             id: submit
+                                    //             anchors.fill: parent
+                                    //             anchors.leftMargin: 1
+                                    //             anchors.rightMargin: 1
+                                    //             anchors.topMargin: 1
+                                    //             anchors.bottomMargin: 1
+                                    //             source: "rsc/done.png"
+
+                                    //             fillMode: Image.PreserveAspectFit
+                                    //         }
+                                    //     }
+
+                                    //     background: Rectangle {
+                                    //         color: parent.down ? "#999999" : "#00000000"
+                                    //         //color:
+                                    //         radius: parent.radius
+                                    //     }
+                                    //     onClicked: {
+                                    //         var dataString = ""
+                                    //         for (var i = 0; i < rowModel.count; i++) {
+                                    //             var item = rowModel.get(i)
+                                    //             dataString += item.text1 + "," + item.text2 + "\n"
+                                    //         }
+                                    //         console.log(dataString)
+                                    //         mainwindow.overWrite(dataString,
+                                    //                              datetext.text)
+                                    //     }
+                                    // }
                                 }
                             }
+                            /*row with edit buttons*/
+                            // Row {
+                            //     id: editButRow
+                            //     spacing: 15
+                            //     height: 40
+
+                            //     Rectangle {
+                            //         color: red
+                            //         height: parent.height
+                            //         width: parent.width * 0.5
+                            //         anchors.verticalCenter: parent.verticalCenter
+                            //         anchors.verticalCenterOffset: 10
+                            //         anchors.horizontalCenter: parent.horizontalCenter
+                            //         Button {}
+                            //         Button {}
+                            //     }
+                            // }
                         }
                     }
                 }
@@ -1204,7 +1563,7 @@ Window {
             radius: 2
             border.color: "#ff7070"
             border.width: 1
-
+            opacity: 0.7
             Text {
                 id: totalAmountHrs
                 font.pixelSize: 22
@@ -1226,18 +1585,23 @@ Window {
             }
         }
     }
-
     Popup {
         id: statPopup
         parent: Overlay.overlay
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
-        width: window.width - 50
+        x: Math.round(
+               (window.width - width) / 2) //from parent.width to screen.width
+        y: Math.round((window.height - height) / 2)
+        width: window.width
         height: window.height * 0.85
         modal: true
         focus: true
+        //visible: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-
+        Image {
+            anchors.fill: parent
+            source: "rsc/bkgr.jpg"
+            fillMode: Image.PreserveAspectCrop
+        }
         /*-------------------- title -----------------------*/
         Rectangle {
             id: statTitle
@@ -1245,12 +1609,12 @@ Window {
             height: parent.height * 0.05
             x: 0
             y: 0
-            //color: "#c85904"
+            color: "#ffffff"
             Text {
                 id: statText
                 width: parent.width
                 height: parent.height
-                font.pixelSize: 24 //parent.width * 0.1 + parent.height * 0.2
+                font.pixelSize: 21 //parent.width * 0.1 + parent.height * 0.2
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 text: "data for " + monthBut.text
@@ -1264,37 +1628,16 @@ Window {
             width: parent.width
             x: 0
             y: statTitle.height + 5
-            color: "#87f10ef5"
-            gradient: Gradient {
-                GradientStop {
-                    position: 0.00
-                    color: "#4fff8a"
-                }
-                GradientStop {
-                    position: 1.00
-                    color: "#38f9d7"
-                }
-            }
+            color: "transparent"
 
             Rectangle {
                 id: gridBox
                 width: statContent.width
                 height: statContent.height * 0.05
                 anchors.top: parent.top
-
                 anchors.topMargin: 0
-                gradient: Gradient {
-                    GradientStop {
-                        position: 0
-                        color: "#30fffeff"
-                    }
+                color: "transparent"
 
-                    GradientStop {
-                        position: 1
-                        color: "#d7fffe"
-                    }
-                    orientation: Gradient.Vertical
-                }
                 Rectangle {
                     id: statRec1
                     width: parent.width * 0.3
@@ -1305,15 +1648,13 @@ Window {
                     anchors.leftMargin: 0
                     gradient: Gradient {
                         GradientStop {
-                            position: 0
+                            position: 0.00
                             color: "#96fbc4"
                         }
-
                         GradientStop {
-                            position: 1
+                            position: 1.00
                             color: "#f9f586"
                         }
-                        orientation: Gradient.Vertical
                     }
 
                     Text {
@@ -1425,29 +1766,94 @@ Window {
                 }
             }
             ChartView {
-                id: chartBar
 
+                id: chartBar
+                //add new aproach with Screen.devicePixelRatio and to enhance screnshot quality
+                width: parent.width //* Screen.devicePixelRatio
+                height: parent.height // * Screen.devicePixelRatio
+                //scale: 1.0 / Screen.devicePixelRatio // scale back down visually so it fits on screen
+                //transformOrigin: Item.TopLeft
+                //end
                 antialiasing: true
                 legend.visible: false
-                anchors.left: parent.left
-                anchors.right: parent.right
+                anchors.left: statContent.left
+                anchors.right: statContent.right
                 anchors.top: gridBox.bottom
-                anchors.bottom: parent.bottom
-                anchors.leftMargin: 0
-                anchors.rightMargin: 0
-                anchors.topMargin: 0
-                anchors.bottomMargin: 0
-                BarSeries {
+                anchors.bottom: statContent.bottom
+                Rectangle {
+                    id: chartLbl
+                    width: contentRow.implicitWidth + 16
+                    height: 25 //parent.height * 0.15
+                    visible: false
+                    color: "#0a28ec"
+                    radius: 5
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.topMargin: 55
+                    anchors.rightMargin: 30
+                    gradient: Gradient {
+                        GradientStop {
+                            position: 0
+                            color: "#5dff0215"
+                        }
 
+                        GradientStop {
+                            position: 0
+                            color: "#460900ff"
+                        }
+
+                        GradientStop {
+                            position: 1
+                            color: "#4a28ff00"
+                        }
+                        orientation: Gradient.Vertical
+                    }
+                    Row {
+                        id: contentRow
+                        anchors.centerIn: parent
+                        spacing: 4
+                        Text {
+                            id: chartLabel
+                            text: qsTr("Total:")
+                            font.pixelSize: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            fontSizeMode: Text.HorizontalFit
+                            font.weight: Font.Normal
+                        }
+                        Text {
+                            id: chartLabelHours
+                            text: qsTr("  ")
+                            font.pixelSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            id: hrLabel
+                            text: qsTr("hrs")
+                            font.pixelSize: 12 //parent.width * 0.1 + parent.height * 0.1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            fontSizeMode: Text.HorizontalFit
+                            font.weight: Font.Normal
+                        }
+                    }
+                }
+                BarSeries {
+                    id: barSeries
                     axisX: BarCategoryAxis {
                         id: mySeries
                         categories: []
+                        labelsFont.pixelSize: Math.max(4, chartBar.width * 0.02)
+                        labelsColor: "blue"
+                        labelsAngle: -45 // rotate labels, useful for long text
+                        //gridVisible: true
+                        //lineVisible: false
                     }
 
                     axisY: ValueAxis {
                         min: 0
                         max: 12
-                        //titleText: "Hours"
+                        labelsFont.pixelSize: Math.max(4, chartBar.width * 0.02)
                     }
 
                     BarSet {
@@ -1465,32 +1871,84 @@ Window {
             property var cats: []
             property var time: []
             height: parent.height * 0.05
-            color: "#00ffffff"
+            //color: "#00f10a0a"
+            color: "transparent"
             radius: 5
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.leftMargin: 0
             anchors.rightMargin: 0
-            anchors.bottomMargin: 0
+            anchors.bottomMargin: -10
             width: parent.width
-            RoundButton {
-                id: xlsBut
-
-                width: window.isPortrait ? 85 : 100
-                height: window.isPortrait ? 35 : 45
-                radius: 5
-
-                text: "get txt"
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.rightMargin: window.isPortrait ? 0 : -2
-                anchors.bottomMargin: window.isPortrait ? -7 : -10
-                onClicked: {
-
-                    fileDialog.open()
+            Row {
+                id: rowSaveBtn
+                anchors.centerIn: parent
+                spacing: 10
+                RoundButton {
+                    id: xlsBut
+                    width: window.isPortrait ? 85 : 100
+                    height: window.isPortrait ? 35 : 35
+                    radius: 5
+                    text: "get txt"
+                    // x: 0
+                    // y: parent.height - 20
+                    onClicked: {
+                        fileDialog.open()
+                    }
+                }
+                RoundButton {
+                    id: picBut
+                    width: window.isPortrait ? 85 : 100
+                    height: window.isPortrait ? 35 : 35
+                    radius: 5
+                    // x: parent.width - 85
+                    // y: parent.height - 20
+                    text: "get image"
+                    onClicked: {
+                        statBottomLine.saveChart(statText.text + ".png")
+                        popupDelay.start()
+                    }
                 }
             }
+            function saveChart(fileName) {
+                var localPath = " "
+                if (window.isMobile) {
+                    localPath = "/storage/emulated/0/Download/" + fileName
+                    localPath = localPath.toString().replace("file://", "")
+                } else {
+                    localPath = mainwindow.imgPath + fileName
+                    localPath = localPath.toString()
+                }
+                console.log("Attempting to save to:", localPath)
+                chartBar.title = statText.text
+                chartLabelHours.text = tHrs.text
+                chartLabelHours.font.pixelSize = 16
+                chartLbl.visible = true
+                // chartBar.width = window.isMobile ? Screen.width : 1024
+                // chartBar.height = window.isMobile ? Screen.height : 768
+                Qt.callLater(function () {
+                    chartBar.grabToImage(function (result) {
+                        var success = result.saveToFile(localPath)
+                        if (success) {
+                            console.log("Saved to:", localPath)
+                            console.log("Image size:", result.image.width, "x",
+                                        result.image.height)
+                            console.log("screen size:", Screen.width,
+                                        Screen.height)
+                            console.log("chartBar size:", chartBar.width,
+                                        chartBar.height)
+                            console.log("Qt version:", Qt.version)
+                        } else {
+                            console.log("Failed to save to:", localPath)
+                        }
+                    }) //, Qt.size(statContent.width, statContent.height))
+                    //Qt.size(isPortrait ? 768 : 1024, isPortrait ? 1024 : 768))
+                })
+                // chartBar.width = statContent.width
+                // chartBar.height = statContent.height
+            }
+
             FileDialog {
                 id: fileDialog
                 title: "Save CSV File"
@@ -1507,10 +1965,15 @@ Window {
                     console.log("file name -> ", selectedFile)
                 }
             }
+            Timer {
+                id: popupDelay
+                interval: 1000 // 1 second
+                repeat: false
+                onTriggered: saveWarningPopup.open()
+            }
         }
         Connections {
             target: mainwindow
-
             function onSendArrayToChart(active_time, day) {
                 //console.log("Received array from C++")
                 //console.log("Array: ", active_time)
@@ -1530,6 +1993,51 @@ Window {
                 console.log("average pr day ", average)
                 longestTime.text = average.toFixed(2)
                 tHrs.text = summ.toFixed(2)
+            }
+        }
+        onClosed: {
+            chartBar.title = ""
+            chartLbl.visible = false
+        }
+    }
+
+    Popup {
+        id: saveWarningPopup
+        parent: Overlay.overlay
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: window.width * 0.75
+        height: window.height * 0.10
+        // width: Math.min(contentItem.implicitWidth + 15 * 2, window.width * 0.9)
+        // height: Math.min(contentItem.implicitHeight + 15 * 2,
+        //                  window.height * 0.5)
+        modal: true
+        focus: true
+        //visible: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        background: Rectangle {
+            color: "#ffffff"
+            opacity: 0.5
+            radius: 10
+        }
+
+        // Rectangle {
+        //     width: parent.width
+        //     height: parent.height * 0.05
+        //     color: "#00ffffff"
+        //     anchors.horizontalCenter: parent.horizontalCenter
+        //     anchors.verticalCenter: parent.verticalCenter
+        padding: 10 // controls spacing around content
+        contentItem: Column {
+            spacing: 8
+            Text {
+                id: savedToDownloads
+                width: parent.width
+                height: parent.height
+                font.pixelSize: 24 //parent.width * 0.1 + parent.height * 0.2
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "Saved to Downloads"
             }
         }
     }
