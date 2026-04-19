@@ -14,7 +14,7 @@ Available only for Android environment
 
 [![Watch the video](https://img.youtube.com/vi/2wLPZ-otzYk/0.jpg)](https://www.youtube.com/watch?v=2wLPZ-otzYk)
 
-info from ChatGPT bellow about arm platforms:
+info from ChatGPT about arm platforms here bellow:
 ## Common armeabi-v7a device families (examples)
 ### Samsung
 
