@@ -2,15 +2,14 @@
 
 Qt Quick and C++ interaction may help to ideas come true 
 
-Main aim of this App is to collect information regarding user's hours at work place.
-Simple interface allows to launch counting of start working day combining it with following breakes.
-Information is being saved in the local device's direcrories (check mainwindow::initializePath())
-2 popup dialog windows can help user to observe, edit timing information during current day and
-during whole month depicting following information in the bar chart view.
-Information is being saved for each day and there is a posibilty to save txt file into the directory
-with information in [day, hours] view. It is possible to save bar chart as png picture.
-Tested on arm-eabi-v7a devices.
-Available only for Android environment
+Main aim of this app is to collect information regarding user's hours at workplace. 
+Simple interface allows to launch counting of start of working day, combining it with following breaks.
+Information is being saved in the local device's directories (check mainwindow::initializePath()). 
+Two popup dialog windows can help user to observe and edit timing information during current day 
+and during whole month, depicting following information in the bar chart view. 
+Information is being saved for each day and there is a possibility to save a txt file into the directory with information in [day, hours] view. 
+It is possible to save bar chart as png picture. Tested on arm-eabi-v7a devices. 
+Available only for Android environment.
 
 [![Watch the video](https://img.youtube.com/vi/2wLPZ-otzYk/0.jpg)](https://www.youtube.com/watch?v=2wLPZ-otzYk)
 
