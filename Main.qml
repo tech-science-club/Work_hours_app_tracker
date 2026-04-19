@@ -373,7 +373,7 @@ Window {
             width: parent.width
             height: parent.height * 0.15
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 60
+            anchors.bottomMargin: 40
 
             RoundButton {
                 id: endButton
@@ -480,7 +480,7 @@ Window {
                 }
                 orientation: Gradient.Vertical
             }
-            anchors.verticalCenterOffset: -25
+            anchors.verticalCenterOffset: -10
             anchors.centerIn: parent
 
             Text {
@@ -1843,7 +1843,7 @@ Window {
                     axisX: BarCategoryAxis {
                         id: mySeries
                         categories: []
-                        labelsFont.pixelSize: Math.max(4, chartBar.width * 0.02)
+                        labelsFont.pixelSize: Math.max(4, chartBar.width * 0.01)
                         labelsColor: "blue"
                         labelsAngle: -45 // rotate labels, useful for long text
                         //gridVisible: true
@@ -1853,7 +1853,7 @@ Window {
                     axisY: ValueAxis {
                         min: 0
                         max: 12
-                        labelsFont.pixelSize: Math.max(4, chartBar.width * 0.02)
+                        labelsFont.pixelSize: Math.max(4, chartBar.width * 0.01)
                     }
 
                     BarSet {
@@ -1906,18 +1906,23 @@ Window {
                     // y: parent.height - 20
                     text: "get image"
                     onClicked: {
-                        statBottomLine.saveChart(statText.text + ".png")
+                        //statBottomLine.saveChart(statText.text + ".png")
+                        statBottomLine.saveChart(statText.text)
                         popupDelay.start()
                     }
                 }
             }
             function saveChart(fileName) {
-                var localPath = " "
+                var localPath = ""
+
+                var timestamp = new Date().getTime() // unique per save
+                var uniqueName = fileName + "_" + timestamp + ".png"
+                console.log("file name to be saved ", uniqueName)
                 if (window.isMobile) {
-                    localPath = "/storage/emulated/0/Download/" + fileName
+                    localPath = "/storage/emulated/0/Download/" + uniqueName
                     localPath = localPath.toString().replace("file://", "")
                 } else {
-                    localPath = mainwindow.imgPath + fileName
+                    localPath = mainwindow.imgPath + uniqueName
                     localPath = localPath.toString()
                 }
                 console.log("Attempting to save to:", localPath)
@@ -1928,25 +1933,33 @@ Window {
                 // chartBar.width = window.isMobile ? Screen.width : 1024
                 // chartBar.height = window.isMobile ? Screen.height : 768
                 Qt.callLater(function () {
-                    chartBar.grabToImage(function (result) {
-                        var success = result.saveToFile(localPath)
-                        if (success) {
-                            console.log("Saved to:", localPath)
-                            console.log("Image size:", result.image.width, "x",
-                                        result.image.height)
-                            console.log("screen size:", Screen.width,
-                                        Screen.height)
-                            console.log("chartBar size:", chartBar.width,
-                                        chartBar.height)
-                            console.log("Qt version:", Qt.version)
-                        } else {
-                            console.log("Failed to save to:", localPath)
-                        }
-                    }) //, Qt.size(statContent.width, statContent.height))
-                    //Qt.size(isPortrait ? 768 : 1024, isPortrait ? 1024 : 768))
+                    /*moved to timer chartDrawDelay section */
+                    // chartBar.grabToImage(function (result) {
+                    //     var success = result.saveToFile(localPath)
+                    //     if (success) {
+                    //         console.log("Saved to:", localPath)
+                    //         console.log("Image size:", result.image.width, "x",
+                    //                     result.image.height)
+                    //         console.log("screen size:", Screen.width,
+                    //                     Screen.height)
+                    //         console.log("chartBar size:", chartBar.width,
+                    //                     chartBar.height)
+                    //         console.log("Qt version:", Qt.version)
+                    //     } else {
+                    //         console.log("Failed to save to:", localPath)
+                    //     }
+                    // }, Qt.size(statContent.width * 5, statContent.height * 5))
+                    //isPortrait ? Qt.size(2000, 2400) : Qt.size(2400, 1600))
+                    /*==========================================================*/
+                    var grabW = Math.round(statContent.width * 5)
+                    var grabH = Math.round(statContent.height * 5)
+
+                    console.log("Scheduled grab size:", grabW, "x", grabH)
+
+                    chartDrawDelay.pendingPath = localPath
+                    chartDrawDelay.pendingSize = Qt.size(grabW, grabH)
+                    chartDrawDelay.start()
                 })
-                // chartBar.width = statContent.width
-                // chartBar.height = statContent.height
             }
 
             FileDialog {
@@ -1970,6 +1983,43 @@ Window {
                 interval: 1000 // 1 second
                 repeat: false
                 onTriggered: saveWarningPopup.open()
+            }
+            Timer {
+                id: chartDrawDelay
+                interval: 150
+                repeat: false
+                property string pendingPath: ""
+                property size pendingSize: Qt.size(0, 0)
+
+                onTriggered: {
+                    console.log("=== GRAB DIAGNOSTIC ===")
+                    console.log("Screen:", Screen.width, "x", Screen.height)
+                    console.log("statContent:", statContent.width, "x",
+                                statContent.height)
+                    console.log("chartBar:", chartBar.width, "x",
+                                chartBar.height)
+                    console.log("isPortrait:", window.isPortrait)
+                    console.log("pendingSize:", pendingSize.width, "x",
+                                pendingSize.height)
+
+                    chartBar.grabToImage(function (result) {
+                        // var success = result.saveToFile(pendingPath)
+                        // if (success) {
+                        //     console.log("Saved to:", pendingPath)
+                        //     console.log("Image size:", result.image.width, "x",
+                        //                 result.image.height)
+                        //     console.log("chartBar size:", chartBar.width,
+                        //                 chartBar.height)
+                        //     console.log("statContent size:", statContent.width,
+                        //                 statContent.height)
+                        // } else {
+                        //     console.log("Failed to save:", pendingPath)
+                        // }
+                        console.log("Grabbed image:", result.image.width, "x",
+                                    result.image.height)
+                        result.saveToFile(pendingPath)
+                    }, pendingSize)
+                }
             }
         }
         Connections {
